@@ -1,8 +1,12 @@
+import "./App.scss";
+
+import TaskContainerComponent from "./components/task-container-component/task-container-component";
+
 function App() {
     return (
-        <>
-            <h1>Hi!</h1>
-        </>
+        <div className="app-component">
+            <TaskContainerComponent></TaskContainerComponent>
+        </div>
     );
 }
 
