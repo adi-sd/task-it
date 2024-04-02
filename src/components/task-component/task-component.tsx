@@ -12,6 +12,18 @@ function TaskComponent() {
                     cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
                     culpa qui officia deserunt mollit anim id est laborum.
                 </p>
+
+                <form className="add-new-task-form">
+                    <input type="text" name="task-title" id="task-title" />
+                    <div>
+                        <input type="radio" name="" id="" />
+                        <input type="radio" name="" id="" />
+                        <input type="radio" name="" id="" />
+                    </div>
+                    <input type="date" name="" id="" />
+                    <input type="time" name="" id="" />
+                    <input type="number" name="" id="" />
+                </form>
             </div>
         </>
     );
