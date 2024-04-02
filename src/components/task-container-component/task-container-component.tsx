@@ -1,9 +1,8 @@
-import TaskComponent from "../task-component/task-component";
+import TaskComponent from "./task-component/task-component";
 
 function TaskContainerComponent() {
     return (
         <div className="task-container-component">
-            <TaskComponent></TaskComponent>
             <TaskComponent></TaskComponent>
         </div>
     );

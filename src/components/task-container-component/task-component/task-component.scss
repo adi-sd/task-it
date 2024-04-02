@@ -1,0 +1,23 @@
+.task-component {
+    position: relative;
+    height: fit-content;
+    width: 500px;
+
+    padding: 20px;
+    margin-bottom: 10px;
+
+    border: black solid;
+    border-radius: 15px;
+
+    .edit-task-icon {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+
+        :hover {
+            transform: scale(1.2);
+            transition: transform ease-in-out;
+            cursor: pointer;
+        }
+    }
+}
