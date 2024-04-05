@@ -27,7 +27,11 @@ function EditTaskComponent() {
                     <div className="mb-2">
                         <input type="text" name="task-title" id="task-title" />
                     </div>
-                    <div className="schedule-radio-group mb-2">
+                    <div>
+                        <label htmlFor="task-notes">Note</label>
+                        <input type="textarea" name="task-notes" id="task-notes" />
+                    </div>
+                    {/* <div className="schedule-radio-group mb-2">
                         <label htmlFor="today-radio">Today</label>
                         <input type="radio" name="today-radio" id="today-radio" />
                         <label htmlFor="tomorrow-radio">Tomorrow</label>
@@ -40,7 +44,7 @@ function EditTaskComponent() {
                         <input type="date" name="due-date" id="due-date" value={dueDate} />
                         <label htmlFor="due-time">Time</label>
                         <input type="time" name="due-time" id="due-time" value={dueTime} />
-                    </div>
+                    </div> */}
                     <div className="mb-2">
                         <label htmlFor="task-points">Points</label>
                         <input
