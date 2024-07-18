@@ -2,6 +2,12 @@
 
 import { useState } from "react";
 
+// Styling
+import { twMerge } from "tailwind-merge";
+
+// Motion
+import { motion } from "framer-motion";
+
 // Components
 import { DisplayTask } from "./display-task";
 import { EditTask } from "./edit-task";
@@ -14,12 +20,19 @@ export const Task = () => {
     };
 
     return (
-        <div className="w-full h-[250px] flex flex-col gap-y-4 rounded-xl">
-            {editTask ? (
-                <EditTask toggleEdit={toggleEdit}></EditTask>
-            ) : (
-                <DisplayTask toggleEdit={toggleEdit}></DisplayTask>
-            )}
-        </div>
+        <motion.div drag>
+            <div
+                className={twMerge(
+                    "w-full flex flex-col gap-y-4 rounded-xl transition-all",
+                    `${editTask ? "h-[250px]" : "h-[150px]"}`
+                )}
+            >
+                {editTask ? (
+                    <EditTask toggleEdit={toggleEdit}></EditTask>
+                ) : (
+                    <DisplayTask toggleEdit={toggleEdit}></DisplayTask>
+                )}
+            </div>
+        </motion.div>
     );
 };
