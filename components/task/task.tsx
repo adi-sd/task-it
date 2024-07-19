@@ -11,9 +11,23 @@ import { motion } from "framer-motion";
 // Components
 import { DisplayTask } from "./display-task";
 import { EditTask } from "./edit-task";
+import { ScheduleTypes, TaskItem } from "@/libs/types";
 
 export const Task = () => {
     const [editTask, setEditTask] = useState(false);
+
+    const taskItem: TaskItem = {
+        id: "xyz123",
+        headline: "This is a test task",
+        description:
+            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore officia ullam possimus modi sint aut earum odit autem veniam in facere accusamus harum.",
+        schedule: ScheduleTypes.Today, // Replace "today" with a valid value from ScheduleTypes
+        isCompleted: false,
+        timestamps: {
+            createdAt: new Date(),
+            lastModifiedAt: new Date(),
+        },
+    };
 
     const toggleEdit = (newValue: boolean) => {
         setEditTask(newValue);
@@ -28,9 +42,9 @@ export const Task = () => {
                 )}
             >
                 {editTask ? (
-                    <EditTask toggleEdit={toggleEdit}></EditTask>
+                    <EditTask toggleEdit={toggleEdit} taskItem={taskItem}></EditTask>
                 ) : (
-                    <DisplayTask toggleEdit={toggleEdit}></DisplayTask>
+                    <DisplayTask toggleEdit={toggleEdit} taskItem={taskItem}></DisplayTask>
                 )}
             </div>
         </motion.div>

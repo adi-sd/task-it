@@ -1,16 +1,19 @@
 "use client";
 
 import { useState } from "react";
-
 import { FaCheck } from "react-icons/fa";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Button } from "../commons/button";
+import { Button } from "../commons/task-button";
+import { TaskItem } from "@/libs/types";
 
 interface EditTaskProps {
     toggleEdit: (value: boolean) => void;
+    taskItem: TaskItem;
 }
 
-export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit }) => {
+export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
     const [isHidden, setIsHidden] = useState(false);
 
     const onDoneClicked = () => {
@@ -20,10 +23,10 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit }) => {
     };
 
     return (
-        <div className="w-full h-[250px] p-4 bg-green-200 rounded-xl drop-shadow-lg" hidden={isHidden}>
+        <div className="w-full h-[250px] p-4 bg-green-200 rounded-xl drop-shadow-lg flex flex-col" hidden={isHidden}>
             <div className="flex">
                 <div className="font-semibold text-neutral-600 flex items-center">
-                    <span>label</span>
+                    <span>{taskItem.headline}</span>
                 </div>
                 <div className="ml-auto flex gap-x-2">
                     <Button onClick={onDoneClicked} className="rounded-full">
@@ -31,9 +34,8 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit }) => {
                     </Button>
                 </div>
             </div>
-            <div className="w-full h-full py-4">
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Cupiditate, fuga. Rem doloremque inventore
-                consectetur id a.
+            <div className=" text-lg w-full h-full my-3">
+                <p>{taskItem.description}</p>
             </div>
         </div>
     );

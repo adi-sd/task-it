@@ -4,13 +4,15 @@ import { useState } from "react";
 import { FaPencilAlt } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
 
-import { Button } from "../commons/button";
+import { Button } from "../commons/task-button";
+import { TaskItem } from "@/libs/types";
 
 interface DisplayTaskProps {
     toggleEdit: (value: boolean) => void;
+    taskItem: TaskItem;
 }
 
-export const DisplayTask: React.FC<DisplayTaskProps> = ({ toggleEdit }) => {
+export const DisplayTask: React.FC<DisplayTaskProps> = ({ toggleEdit, taskItem }) => {
     const [isHidden, setIsHidden] = useState(false);
 
     const onEditClicked = () => {
@@ -23,7 +25,7 @@ export const DisplayTask: React.FC<DisplayTaskProps> = ({ toggleEdit }) => {
         <div className="w-full h-[150px] p-4 bg-sky-200 rounded-xl drop-shadow-lg flex flex-col" hidden={isHidden}>
             <div className="flex">
                 <div className="font-semibold text-neutral-600 flex items-center">
-                    <span>label</span>
+                    <span>{taskItem.headline}</span>
                 </div>
                 <div className="ml-auto flex gap-x-2">
                     <Button onClick={onEditClicked} className="rounded-full">
@@ -34,9 +36,8 @@ export const DisplayTask: React.FC<DisplayTaskProps> = ({ toggleEdit }) => {
                     </Button>
                 </div>
             </div>
-            <div className="w-full h-full py-4">
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Cupiditate, fuga. Rem doloremque inventore
-                consectetur id a.
+            <div className="text-lg w-full h-full my-3 block overflow-hidden text-ellipsis">
+                <p className="">{taskItem.description}</p>
             </div>
         </div>
     );
