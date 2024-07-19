@@ -9,10 +9,26 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Combobox } from "../commons/combo-box";
 
 import { TaskButton } from "../commons/task-button";
-import { TaskItem } from "@/lib/types";
+import { ScheduleTypes, TaskItem } from "@/lib/types";
 import { TaskSchema } from "@/schemas";
+
+const scheduleTypes = [
+    {
+        value: ScheduleTypes.Today,
+        label: ScheduleTypes.Today,
+    },
+    {
+        value: ScheduleTypes.Tomorrow,
+        label: ScheduleTypes.Tomorrow,
+    },
+    {
+        value: ScheduleTypes.ThisWeek,
+        label: ScheduleTypes.ThisWeek,
+    },
+];
 
 interface EditTaskProps {
     toggleEdit: (value: boolean) => void;
@@ -35,7 +51,7 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
     const handleEditTask = () => {};
 
     return (
-        <div className="w-full h-[250px] p-4 bg-green-200 rounded-xl drop-shadow-lg flex flex-col" hidden={isHidden}>
+        <div className="w-full h-fit p-4 bg-green-200 rounded-xl drop-shadow-lg flex flex-col" hidden={isHidden}>
             {/* <div className="font-semibold text-neutral-600 flex items-center">
                     <span>Edit - {taskItem.id}</span>
                 </div> */}
@@ -65,7 +81,7 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                                 </TaskButton>
                             </div>
                         </div>
-                        <div className="text-lg w-full h-full">
+                        <div className="text-lg w-full">
                             <FormField
                                 control={form.control}
                                 name="headline"
@@ -74,6 +90,20 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                                         {/* <FormLabel>Description</FormLabel> */}
                                         <FormControl>
                                             <Textarea {...field} value={taskItem.description}></Textarea>
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            ></FormField>
+                        </div>
+                        <div className="text-lg w-full">
+                            <FormField
+                                control={form.control}
+                                name="schedule"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        {/* <FormLabel>Description</FormLabel> */}
+                                        <FormControl>
+                                            <Combobox options={scheduleTypes}></Combobox>
                                         </FormControl>
                                     </FormItem>
                                 )}

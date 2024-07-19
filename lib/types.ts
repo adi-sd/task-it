@@ -1,7 +1,7 @@
 export enum ScheduleTypes {
-    "Today",
-    "Tomorrow",
-    "This-Week",
+    Today = "Today",
+    Tomorrow = "Tomorrow",
+    ThisWeek = "This Week",
 }
 
 export type TaskItem = {
@@ -14,4 +14,9 @@ export type TaskItem = {
         createdAt: Date;
         lastModifiedAt: Date;
     };
+};
+
+export type ComboBoxOption = {
+    value: ScheduleTypes;
+    label: string;
 };
