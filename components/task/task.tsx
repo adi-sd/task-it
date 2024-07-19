@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 // Components
 import { DisplayTask } from "./display-task";
 import { EditTask } from "./edit-task";
-import { ScheduleTypes, TaskItem } from "@/libs/types";
+import { ScheduleTypes, TaskItem } from "@/lib/types";
 
 export const Task = () => {
     const [editTask, setEditTask] = useState(false);

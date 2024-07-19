@@ -1,4 +1,4 @@
-import { ScheduleTypes } from "@/libs/types";
+import { ScheduleTypes } from "@/lib/types";
 import * as z from "zod";
 
 export const TaskSchema = z.object({
