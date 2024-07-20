@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { startTransition, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -9,9 +9,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Combobox } from "../commons/combo-box";
 
 import { TaskButton } from "../commons/task-button";
+import { Select } from "../commons/select";
 import { ScheduleTypes, TaskItem } from "@/lib/types";
 import { TaskSchema } from "@/schemas";
 
@@ -48,7 +48,12 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
         toggleEdit(isHidden); // Setting isEdit(Parent) to exact value of if Edit Task is showing
     };
 
-    const handleEditTask = () => {};
+    const onSubmit = (values: z.infer<typeof TaskSchema>) => {
+        startTransition(() => {
+            console.log(values);
+            onDoneClicked();
+        });
+    };
 
     return (
         <div className="w-full h-fit p-4 bg-green-200 rounded-xl drop-shadow-lg flex flex-col" hidden={isHidden}>
@@ -56,7 +61,7 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                     <span>Edit - {taskItem.id}</span>
                 </div> */}
             <Form {...form}>
-                <form onSubmit={handleEditTask} className="space-y-3">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
                     <div className="flex flex-col gap-y-4">
                         <div className="flex">
                             <FormField
@@ -76,7 +81,7 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                                 )}
                             ></FormField>
                             <div className="ml-auto flex gap-x-2">
-                                <TaskButton onClick={onDoneClicked} className="rounded-full">
+                                <TaskButton className="rounded-full" onClick={() => onSubmit(form.getValues())}>
                                     <FaCheck size={15}></FaCheck>
                                 </TaskButton>
                             </div>
@@ -103,7 +108,7 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                                     <FormItem>
                                         {/* <FormLabel>Description</FormLabel> */}
                                         <FormControl>
-                                            <Combobox options={scheduleTypes}></Combobox>
+                                            <Select options={scheduleTypes}></Select>
                                         </FormControl>
                                     </FormItem>
                                 )}

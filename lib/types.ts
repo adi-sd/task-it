@@ -16,7 +16,7 @@ export type TaskItem = {
     };
 };
 
-export type ComboBoxOption = {
+export type OptionType = {
     value: ScheduleTypes;
     label: string;
 };
