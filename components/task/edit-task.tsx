@@ -84,7 +84,7 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                         <div className="text-lg w-full">
                             <FormField
                                 control={form.control}
-                                name="headline"
+                                name="description"
                                 render={({ field }) => (
                                     <FormItem>
                                         {/* <FormLabel>Description</FormLabel> */}
