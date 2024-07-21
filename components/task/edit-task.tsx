@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { FaCheck } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -38,12 +38,10 @@ interface EditTaskProps {
 export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
     const [isHidden, setIsHidden] = useState(false);
     const [isPending, startTransition] = useTransition();
+    const [tempTask, setTempTask] = useState(taskItem);
 
     const form = useForm<z.infer<typeof TaskSchema>>({
         resolver: zodResolver(TaskSchema),
-        defaultValues: {
-            schedule: ScheduleTypes.Today,
-        },
     });
 
     const onDoneClicked = () => {
@@ -52,13 +50,16 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
         toggleEdit(isHidden); // Setting isEdit(Parent) to exact value of if Edit Task is showing
     };
 
-    const onSubmit = (values: z.infer<typeof TaskSchema>) => {
+    const onSubmit = () => {
         startTransition(() => {
-            // Add a server action to put the task in database
-            console.log(values);
-            // onDoneClicked();
+            console.log("submitted value - ", form.getValues());
         });
     };
+
+    useEffect(() => {
+        console.log("oldTask - ", taskItem);
+        console.log("newTask - ", tempTask);
+    });
 
     return (
         <div className="w-full h-fit p-4 bg-green-200 rounded-xl drop-shadow-lg flex flex-col" hidden={isHidden}>
@@ -75,13 +76,21 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                                 render={({ field }) => (
                                     <FormItem className="w-full mr-4">
                                         <FormControl>
-                                            <Input {...field} type="headline" className="text-neutral-600"></Input>
+                                            <Input
+                                                {...field}
+                                                type="headline"
+                                                className="text-neutral-600"
+                                                value={tempTask.headline}
+                                                onChange={(e) => {
+                                                    setTempTask({ ...tempTask, headline: e.target.value });
+                                                }}
+                                            ></Input>
                                         </FormControl>
                                     </FormItem>
                                 )}
                             ></FormField>
                             <div className="ml-auto flex gap-x-2">
-                                <Button type="submit" onClick={() => onSubmit(form.getValues())} disabled={isPending}>
+                                <Button type="submit" disabled={isPending}>
                                     <FaCheck size={15}></FaCheck>
                                 </Button>
                             </div>
@@ -94,7 +103,13 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                                     <FormItem>
                                         {/* <FormLabel>Description</FormLabel> */}
                                         <FormControl>
-                                            <Textarea {...field}></Textarea>
+                                            <Textarea
+                                                {...field}
+                                                value={tempTask.description}
+                                                onChange={(e) => {
+                                                    setTempTask({ ...tempTask, description: e.target.value });
+                                                }}
+                                            ></Textarea>
                                         </FormControl>
                                     </FormItem>
                                 )}
@@ -108,12 +123,15 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                                     <FormItem>
                                         {/* <FormLabel>Description</FormLabel> */}
                                         <FormControl>
-                                            <Select options={scheduleTypes}></Select>
+                                            <Select {...field} options={scheduleTypes}></Select>
                                         </FormControl>
                                     </FormItem>
                                 )}
                             ></FormField>
                         </div>
+                    </div>
+                    <div>
+                        <Button type="submit">Submit</Button>
                     </div>
                 </form>
             </Form>
