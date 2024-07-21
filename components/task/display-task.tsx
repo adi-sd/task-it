@@ -4,8 +4,8 @@ import { useState } from "react";
 import { FaPencilAlt } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
 
-import { TaskButton } from "../commons/task-button";
 import { TaskItem } from "@/lib/types";
+import { Button } from "../ui/button";
 
 interface DisplayTaskProps {
     toggleEdit: (value: boolean) => void;
@@ -29,12 +29,12 @@ export const DisplayTask: React.FC<DisplayTaskProps> = ({ toggleEdit, taskItem }
                         <span className="text-nowrap overflow-hidden text-ellipsis mr-4">{taskItem.headline}</span>
                     </div>
                     <div className="ml-auto flex gap-x-2">
-                        <TaskButton onClick={onEditClicked} className="rounded-full">
+                        <Button onClick={onEditClicked} className="rounded-full">
                             <FaPencilAlt size={15}></FaPencilAlt>
-                        </TaskButton>
-                        <TaskButton onClick={onEditClicked} className="rounded-full">
+                        </Button>
+                        <Button onClick={onEditClicked} className="rounded-full">
                             <FaTrashAlt size={15}></FaTrashAlt>
-                        </TaskButton>
+                        </Button>
                     </div>
                 </div>
                 <div className="text-lg w-full h-full block overflow-hidden text-ellipsis">

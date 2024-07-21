@@ -9,8 +9,6 @@ export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElemen
 }
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps>(({ className, options, ...props }, ref) => {
-    const [currentValue, setCurrentValue] = useState(props.value);
-
     return (
         <select
             className={cn(
@@ -19,8 +17,6 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(({ className, op
             )}
             ref={ref}
             {...props}
-            value={currentValue}
-            onChange={(e) => setCurrentValue(e.target.value)}
         >
             {options.map((item) => (
                 <option key={item.value} value={item.value}>

@@ -1,13 +1,10 @@
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 
 export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(({ className, ...props }, ref) => {
-    const [currentValue, setCurrentValue] = useState(props.value);
-
     return (
         <textarea
             className={cn(
@@ -16,8 +13,6 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(({ classNa
             )}
             ref={ref}
             {...props}
-            value={currentValue}
-            onChange={(e) => setCurrentValue(e.target.value)}
         />
     );
 });

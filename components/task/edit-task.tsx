@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useState } from "react";
+import { useState, useTransition } from "react";
 import { FaCheck } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -8,12 +8,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 
-import { TaskButton } from "../commons/task-button";
 import { Select } from "../commons/select";
 import { ScheduleTypes, TaskItem } from "@/lib/types";
 import { TaskSchema } from "@/schemas";
+import { Button } from "../ui/button";
 
 const scheduleTypes = [
     {
@@ -37,9 +37,13 @@ interface EditTaskProps {
 
 export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
     const [isHidden, setIsHidden] = useState(false);
+    const [isPending, startTransition] = useTransition();
 
     const form = useForm<z.infer<typeof TaskSchema>>({
         resolver: zodResolver(TaskSchema),
+        defaultValues: {
+            schedule: ScheduleTypes.Today,
+        },
     });
 
     const onDoneClicked = () => {
@@ -50,8 +54,9 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
 
     const onSubmit = (values: z.infer<typeof TaskSchema>) => {
         startTransition(() => {
+            // Add a server action to put the task in database
             console.log(values);
-            onDoneClicked();
+            // onDoneClicked();
         });
     };
 
@@ -61,7 +66,7 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                     <span>Edit - {taskItem.id}</span>
                 </div> */}
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+                <form className="space-y-3" onSubmit={form.handleSubmit(onSubmit)}>
                     <div className="flex flex-col gap-y-4">
                         <div className="flex">
                             <FormField
@@ -70,20 +75,15 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                                 render={({ field }) => (
                                     <FormItem className="w-full mr-4">
                                         <FormControl>
-                                            <Input
-                                                {...field}
-                                                type="headline"
-                                                value={taskItem.headline}
-                                                className="text-neutral-600"
-                                            ></Input>
+                                            <Input {...field} type="headline" className="text-neutral-600"></Input>
                                         </FormControl>
                                     </FormItem>
                                 )}
                             ></FormField>
                             <div className="ml-auto flex gap-x-2">
-                                <TaskButton className="rounded-full" onClick={() => onSubmit(form.getValues())}>
+                                <Button type="submit" onClick={() => onSubmit(form.getValues())} disabled={isPending}>
                                     <FaCheck size={15}></FaCheck>
-                                </TaskButton>
+                                </Button>
                             </div>
                         </div>
                         <div className="text-lg w-full">
@@ -94,7 +94,7 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                                     <FormItem>
                                         {/* <FormLabel>Description</FormLabel> */}
                                         <FormControl>
-                                            <Textarea {...field} value={taskItem.description}></Textarea>
+                                            <Textarea {...field}></Textarea>
                                         </FormControl>
                                     </FormItem>
                                 )}
