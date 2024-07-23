@@ -16,28 +16,25 @@ import { TaskSchema } from "@/schemas";
 import { Button } from "../ui/button";
 
 interface EditTaskProps {
-    toggleEdit: (value: boolean) => void;
+    toggleEdit: (value: boolean, currentTaskValue: TaskItem) => void;
     taskItem: TaskItem;
 }
 
 export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
     const [isHidden, setIsHidden] = useState(false);
     const [isPending, startTransition] = useTransition();
-    const [tempTask, setTempTask] = useState(taskItem);
+    const [updatedTask, setUpdatedTask] = useState(taskItem);
 
     const form = useForm<z.infer<typeof TaskSchema>>({
         resolver: zodResolver(TaskSchema),
     });
 
-    const onDoneClicked = () => {
-        console.log("Clicked Done from Edit Task!");
-        setIsHidden(!isHidden);
-        toggleEdit(isHidden); // Setting isEdit(Parent) to exact value of if Edit Task is showing
-    };
-
     const onSubmit = () => {
         startTransition(() => {
-            console.log("submitted value - ", tempTask);
+            console.log("submitted value - ", updatedTask);
+            setUpdatedTask(updatedTask);
+            setIsHidden(!isHidden); // Setting isEdit(Parent) to exact value of if Edit Task is showing
+            toggleEdit(isHidden, updatedTask);
         });
     };
 
@@ -47,14 +44,14 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
     // });
 
     return (
-        <div className="w-full h-fit p-4 bg-green-200 rounded-xl drop-shadow-lg flex flex-col" hidden={isHidden}>
+        <div className="w-full h-full rounded-xl drop-shadow-lg flex flex-col" hidden={isHidden}>
             {/* <div className="font-semibold text-neutral-600 flex items-center">
                     <span>Edit - {taskItem.id}</span>
                 </div> */}
             <Form {...form}>
                 <form onSubmit={() => form.handleSubmit(onSubmit)}>
                     <div className="flex flex-col gap-y-4">
-                        <div className="flex">
+                        <div className="flex w-full">
                             <FormField
                                 control={form.control}
                                 name="headline"
@@ -65,9 +62,9 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                                                 {...field}
                                                 type="headline"
                                                 className="text-neutral-600"
-                                                value={tempTask.headline}
+                                                value={updatedTask.headline}
                                                 onChange={(e) => {
-                                                    setTempTask({ ...tempTask, headline: e.target.value });
+                                                    setUpdatedTask({ ...updatedTask, headline: e.target.value });
                                                 }}
                                             ></Input>
                                         </FormControl>
@@ -90,9 +87,9 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                                         <FormControl>
                                             <Textarea
                                                 {...field}
-                                                value={tempTask.description}
+                                                value={updatedTask.description}
                                                 onChange={(e) => {
-                                                    setTempTask({ ...tempTask, description: e.target.value });
+                                                    setUpdatedTask({ ...updatedTask, description: e.target.value });
                                                 }}
                                             ></Textarea>
                                         </FormControl>
@@ -111,10 +108,10 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                                             <Select
                                                 {...field}
                                                 options={scheduleTypeOptions}
-                                                value={tempTask.schedule}
+                                                value={updatedTask.schedule}
                                                 onChange={(e) => {
-                                                    setTempTask({
-                                                        ...tempTask,
+                                                    setUpdatedTask({
+                                                        ...updatedTask,
                                                         schedule: e.target.value as ScheduleTypes,
                                                     });
                                                 }}

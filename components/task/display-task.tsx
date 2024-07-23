@@ -8,7 +8,7 @@ import { TaskItem } from "@/lib/types";
 import { Button } from "../ui/button";
 
 interface DisplayTaskProps {
-    toggleEdit: (value: boolean) => void;
+    toggleEdit: (value: boolean, currentTaskValue: TaskItem) => void;
     taskItem: TaskItem;
 }
 
@@ -18,11 +18,11 @@ export const DisplayTask: React.FC<DisplayTaskProps> = ({ toggleEdit, taskItem }
     const onEditClicked = () => {
         console.log("Clicked Edit Task from Display task!");
         setIsHidden(!isHidden);
-        toggleEdit(!isHidden); // Setting isEdit(Parent) opposite of if the Display task is showing
+        toggleEdit(!isHidden, taskItem); // Setting isEdit(Parent) opposite of if the Display task is showing
     };
 
     return (
-        <div className="w-full h-[180px] p-4 bg-sky-200 rounded-xl drop-shadow-lg flex flex-col" hidden={isHidden}>
+        <div className="w-full h-full rounded-xl drop-shadow-lg flex flex-col" hidden={isHidden}>
             <div className="flex flex-col gap-y-4">
                 <div className="flex">
                     <div className="font-semibold text-neutral-600 flex items-center overflow-hidden">
@@ -37,7 +37,7 @@ export const DisplayTask: React.FC<DisplayTaskProps> = ({ toggleEdit, taskItem }
                         </Button>
                     </div>
                 </div>
-                <div className="text-lg w-full h-full block overflow-hidden text-ellipsis">
+                <div className="text-lg h-full block overflow-hidden text-ellipsis">
                     <p className="">{taskItem.description}</p>
                 </div>
             </div>
