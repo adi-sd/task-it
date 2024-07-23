@@ -20,3 +20,18 @@ export type OptionType = {
     value: ScheduleTypes;
     label: string;
 };
+
+export const scheduleTypeOptions = [
+    {
+        value: ScheduleTypes.Today,
+        label: ScheduleTypes.Today,
+    },
+    {
+        value: ScheduleTypes.Tomorrow,
+        label: ScheduleTypes.Tomorrow,
+    },
+    {
+        value: ScheduleTypes.ThisWeek,
+        label: ScheduleTypes.ThisWeek,
+    },
+];

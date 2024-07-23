@@ -3,7 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { FaCheck } from "react-icons/fa";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Input } from "@/components/ui/input";
@@ -11,24 +11,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 
 import { Select } from "../commons/select";
-import { ScheduleTypes, TaskItem } from "@/lib/types";
+import { scheduleTypeOptions, ScheduleTypes, TaskItem } from "@/lib/types";
 import { TaskSchema } from "@/schemas";
 import { Button } from "../ui/button";
-
-const scheduleTypes = [
-    {
-        value: ScheduleTypes.Today,
-        label: ScheduleTypes.Today,
-    },
-    {
-        value: ScheduleTypes.Tomorrow,
-        label: ScheduleTypes.Tomorrow,
-    },
-    {
-        value: ScheduleTypes.ThisWeek,
-        label: ScheduleTypes.ThisWeek,
-    },
-];
 
 interface EditTaskProps {
     toggleEdit: (value: boolean) => void;
@@ -52,14 +37,14 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
 
     const onSubmit = () => {
         startTransition(() => {
-            console.log("submitted value - ", form.getValues());
+            console.log("submitted value - ", tempTask);
         });
     };
 
-    useEffect(() => {
-        console.log("oldTask - ", taskItem);
-        console.log("newTask - ", tempTask);
-    });
+    // useEffect(() => {
+    //     console.log("oldTask - ", taskItem);
+    //     console.log("newTask - ", tempTask);
+    // });
 
     return (
         <div className="w-full h-fit p-4 bg-green-200 rounded-xl drop-shadow-lg flex flex-col" hidden={isHidden}>
@@ -67,7 +52,7 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                     <span>Edit - {taskItem.id}</span>
                 </div> */}
             <Form {...form}>
-                <form className="space-y-3" onSubmit={form.handleSubmit(onSubmit)}>
+                <form onSubmit={() => form.handleSubmit(onSubmit)}>
                     <div className="flex flex-col gap-y-4">
                         <div className="flex">
                             <FormField
@@ -90,7 +75,7 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                                 )}
                             ></FormField>
                             <div className="ml-auto flex gap-x-2">
-                                <Button type="submit" disabled={isPending}>
+                                <Button disabled={isPending} onClick={() => onSubmit()}>
                                     <FaCheck size={15}></FaCheck>
                                 </Button>
                             </div>
@@ -123,15 +108,22 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                                     <FormItem>
                                         {/* <FormLabel>Description</FormLabel> */}
                                         <FormControl>
-                                            <Select {...field} options={scheduleTypes}></Select>
+                                            <Select
+                                                {...field}
+                                                options={scheduleTypeOptions}
+                                                value={tempTask.schedule}
+                                                onChange={(e) => {
+                                                    setTempTask({
+                                                        ...tempTask,
+                                                        schedule: e.target.value as ScheduleTypes,
+                                                    });
+                                                }}
+                                            ></Select>
                                         </FormControl>
                                     </FormItem>
                                 )}
                             ></FormField>
                         </div>
-                    </div>
-                    <div>
-                        <Button type="submit">Submit</Button>
                     </div>
                 </form>
             </Form>
