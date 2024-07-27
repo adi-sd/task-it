@@ -8,25 +8,25 @@ import { twMerge } from "tailwind-merge";
 // Components
 import { DisplayTask } from "./display-task";
 import { EditTask } from "./edit-task";
-import { TaskItem } from "@/lib/types";
-import { EmptyTask } from "./empty-task";
+import { ScheduleTypes, TaskItem } from "@/lib/types";
 
-interface TaskProps {
-    task: TaskItem;
-}
+interface EmptyTaskProps {}
 
-export const Task: React.FC<TaskProps> = ({ task }) => {
-    const [editTask, setEditTask] = useState(false);
-    const [taskItemValue, setTaskItemValue] = useState(task);
+const emptyTask: TaskItem = {
+    headline: "",
+    description: "",
+    schedule: ScheduleTypes.Today,
+    isCompleted: false,
+};
+
+export const EmptyTask: React.FC<EmptyTaskProps> = () => {
+    const [editTask, setEditTask] = useState(true);
+    const [taskItemValue, setTaskItemValue] = useState(emptyTask);
 
     const toggleEdit = (newValue: boolean, currentTaskValue: TaskItem) => {
         setEditTask(newValue);
         setTaskItemValue(currentTaskValue);
     };
-
-    if (taskItemValue.id === "empty-task-id") {
-        return <EmptyTask></EmptyTask>;
-    }
 
     return (
         <div

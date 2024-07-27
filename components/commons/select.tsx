@@ -1,7 +1,6 @@
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 import { OptionType } from "@/lib/types";
 
 export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {

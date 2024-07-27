@@ -5,15 +5,13 @@ export enum ScheduleTypes {
 }
 
 export type TaskItem = {
-    id: string;
+    id?: string;
     headline: string;
     description: string;
     isCompleted: boolean;
     schedule: ScheduleTypes;
-    timestamps: {
-        createdAt: Date;
-        lastModifiedAt: Date;
-    };
+    createdAt?: Date;
+    lastModifiedAt?: Date;
 };
 
 export type OptionType = {
@@ -35,3 +33,11 @@ export const scheduleTypeOptions = [
         label: ScheduleTypes.ThisWeek,
     },
 ];
+
+export const EmptyTaskTemplate: TaskItem = {
+    id: "empty-task-id",
+    headline: "",
+    description: "",
+    schedule: ScheduleTypes.Today,
+    isCompleted: false,
+};

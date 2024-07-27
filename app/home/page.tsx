@@ -10,10 +10,8 @@ const expTaskItems: TaskItem[] = [
             "Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore officia ullam possimus modi sint aut earum odit autem veniam in facere accusamus harum.",
         schedule: ScheduleTypes.Today, // Replace "today" with a valid value from ScheduleTypes
         isCompleted: false,
-        timestamps: {
-            createdAt: new Date(),
-            lastModifiedAt: new Date(),
-        },
+        createdAt: new Date(),
+        lastModifiedAt: new Date(),
     },
     {
         id: "xyz124",
@@ -22,10 +20,8 @@ const expTaskItems: TaskItem[] = [
             "Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore officia ullam possimus modi sint aut earum odit autem veniam in facere accusamus harum.",
         schedule: ScheduleTypes.Today, // Replace "today" with a valid value from ScheduleTypes
         isCompleted: false,
-        timestamps: {
-            createdAt: new Date(),
-            lastModifiedAt: new Date(),
-        },
+        createdAt: new Date(),
+        lastModifiedAt: new Date(),
     },
     {
         id: "xyz125",
@@ -34,10 +30,8 @@ const expTaskItems: TaskItem[] = [
             "Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore officia ullam possimus modi sint aut earum odit autem veniam in facere accusamus harum.",
         schedule: ScheduleTypes.Tomorrow, // Replace "today" with a valid value from ScheduleTypes
         isCompleted: false,
-        timestamps: {
-            createdAt: new Date(),
-            lastModifiedAt: new Date(),
-        },
+        createdAt: new Date(),
+        lastModifiedAt: new Date(),
     },
     {
         id: "xyz126",
@@ -46,10 +40,8 @@ const expTaskItems: TaskItem[] = [
             "Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore officia ullam possimus modi sint aut earum odit autem veniam in facere accusamus harum.",
         schedule: ScheduleTypes.Tomorrow, // Replace "today" with a valid value from ScheduleTypes
         isCompleted: false,
-        timestamps: {
-            createdAt: new Date(),
-            lastModifiedAt: new Date(),
-        },
+        createdAt: new Date(),
+        lastModifiedAt: new Date(),
     },
 ];
 

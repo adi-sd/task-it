@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { MutableRefObject, useEffect, useRef, useState, useTransition } from "react";
 import { FaCheck } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -21,6 +21,12 @@ interface EditTaskProps {
 }
 
 export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
+    const headlineRef = useRef<HTMLInputElement>(null);
+    const descriptionRef = useRef<HTMLTextAreaElement>(null);
+    const scheduleRef = useRef<HTMLSelectElement>(null);
+    const submitButtonRef = useRef<HTMLButtonElement>(null);
+    const refArray = [headlineRef, descriptionRef, scheduleRef, submitButtonRef];
+
     const [isHidden, setIsHidden] = useState(false);
     const [isPending, startTransition] = useTransition();
     const [updatedTask, setUpdatedTask] = useState(taskItem);
@@ -43,13 +49,27 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
     //     console.log("newTask - ", tempTask);
     // });
 
+    const handleEnterKeyDown = (event: any, currentReference: MutableRefObject<any>) => {
+        if (event.key === "ArrowDown") {
+            let currentRefIdx = refArray.indexOf(currentReference);
+            if (currentRefIdx === -1) return;
+            let nextRefIdx = currentRefIdx + 1;
+            if (nextRefIdx === refArray.length) nextRefIdx == 3;
+            refArray[nextRefIdx].current?.focus();
+        }
+    };
+
+    useEffect(() => {
+        headlineRef.current?.focus();
+    }, []);
+
     return (
         <div className="w-full h-full rounded-xl drop-shadow-lg flex flex-col" hidden={isHidden}>
             {/* <div className="font-semibold text-neutral-600 flex items-center">
                     <span>Edit - {taskItem.id}</span>
                 </div> */}
             <Form {...form}>
-                <form onSubmit={() => form.handleSubmit(onSubmit)}>
+                <form>
                     <div className="flex flex-col gap-y-4">
                         <div className="flex w-full">
                             <FormField
@@ -60,6 +80,8 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                                         <FormControl>
                                             <Input
                                                 {...field}
+                                                ref={headlineRef}
+                                                onKeyDown={(e) => handleEnterKeyDown(e, headlineRef)}
                                                 type="headline"
                                                 className="text-neutral-600"
                                                 value={updatedTask.headline}
@@ -72,7 +94,12 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                                 )}
                             ></FormField>
                             <div className="ml-auto flex gap-x-2">
-                                <Button disabled={isPending} onClick={() => onSubmit()}>
+                                <Button
+                                    disabled={isPending}
+                                    onClick={() => onSubmit()}
+                                    ref={submitButtonRef}
+                                    onKeyDown={(e) => handleEnterKeyDown(e, submitButtonRef)}
+                                >
                                     <FaCheck size={15}></FaCheck>
                                 </Button>
                             </div>
@@ -87,6 +114,8 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                                         <FormControl>
                                             <Textarea
                                                 {...field}
+                                                ref={descriptionRef}
+                                                onKeyDown={(e) => handleEnterKeyDown(e, descriptionRef)}
                                                 value={updatedTask.description}
                                                 onChange={(e) => {
                                                     setUpdatedTask({ ...updatedTask, description: e.target.value });
@@ -107,6 +136,8 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                                         <FormControl>
                                             <Select
                                                 {...field}
+                                                ref={scheduleRef}
+                                                onKeyDown={(e) => handleEnterKeyDown(e, scheduleRef)}
                                                 options={scheduleTypeOptions}
                                                 value={updatedTask.schedule}
                                                 onChange={(e) => {
