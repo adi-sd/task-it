@@ -85,13 +85,13 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ listType }, ref) => {
     }, [currentTasks]);
 
     return (
-        <div
-            className="h-[95%] w-full rounded-lg border-2 border-black"
-            onDragOver={handleDragOver}
-            onDrop={handleOnDrop}
-        >
+        <div className="h-[95%] w-full rounded-lg" onDragOver={handleDragOver} onDrop={handleOnDrop}>
             {/* <div onClick={handleAddNewTask}>Add New</div> */}
-            <Reorder.Group values={currentTasks} onReorder={setCurrentTasks} className="flex flex-col gap-y-2 p-2">
+            <Reorder.Group
+                values={currentTasks}
+                onReorder={setCurrentTasks}
+                className="flex flex-col gap-y-2"
+            >
                 {currentTasks && currentTasks.length !== 0
                     ? currentTasks.map((task) => {
                           return (

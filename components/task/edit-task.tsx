@@ -47,7 +47,7 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
     };
 
     return (
-        <div className="w-full h-full rounded-xl drop-shadow-lg flex flex-col" hidden={isHidden}>
+        <div className="w-full h-full rounded-lg drop-shadow-lg flex flex-col" hidden={isHidden}>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <div className="space-y-4">

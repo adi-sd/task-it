@@ -26,7 +26,7 @@ export const DisplayTask: React.FC<DisplayTaskProps> = ({ toggleEdit, handleDele
     };
 
     return (
-        <div className="w-full h-full rounded-xl drop-shadow-lg flex flex-col" hidden={isHidden}>
+        <div className="w-full h-full rounded-lg drop-shadow-lg flex flex-col" hidden={isHidden}>
             <div className="flex flex-col gap-y-4">
                 <div className="flex">
                     <div className="font-semibold text-neutral-600 flex items-center overflow-hidden">
