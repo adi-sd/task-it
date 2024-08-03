@@ -1,41 +1,8 @@
-export enum ScheduleTypes {
-    Today = "Today",
-    Tomorrow = "Tomorrow",
-    ThisWeek = "This Week",
-}
+import { z } from "zod";
+import { ScheduleTypes, Task } from "@prisma/client";
+import { TaskUpdateSchema } from "@/schemas";
 
-export type TaskItem = {
-    id?: string;
-    headline: string;
-    description: string;
-    isCompleted: boolean;
-    schedule: ScheduleTypes;
-    createdAt?: Date;
-    lastModifiedAt?: Date;
-};
-
-export type OptionType = {
-    value: ScheduleTypes;
-    label: string;
-};
-
-export const scheduleTypeOptions = [
-    {
-        value: ScheduleTypes.Today,
-        label: ScheduleTypes.Today,
-    },
-    {
-        value: ScheduleTypes.Tomorrow,
-        label: ScheduleTypes.Tomorrow,
-    },
-    {
-        value: ScheduleTypes.ThisWeek,
-        label: ScheduleTypes.ThisWeek,
-    },
-];
-
-export const EmptyTaskTemplate: TaskItem = {
-    id: "empty-task-id",
+export const EmptyTaskTemplate: z.infer<typeof TaskUpdateSchema> = {
     headline: "",
     description: "",
     schedule: ScheduleTypes.Today,

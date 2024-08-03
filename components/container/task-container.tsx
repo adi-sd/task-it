@@ -1,27 +1,15 @@
-"use client";
-
-import { useRef, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 
-import { EmptyTaskTemplate, ScheduleTypes, TaskItem } from "@/lib/types";
 import { Button } from "../ui/button";
 import { TaskList } from "./task-list";
+import { ScheduleTypes, Task } from "@prisma/client";
 
 export interface TaskContainerProps {
     type: ScheduleTypes;
-    tasks: TaskItem[];
 }
 
-export const TaskContainer: React.FC<TaskContainerProps> = ({ type, tasks }) => {
-    const [scheduledTasks, setScheduledTasks] = useState(tasks.filter((taskItem) => taskItem.schedule === type));
-
-    const handleAddExistingTask = (newTask: TaskItem) => {
-        newTask.schedule = type;
-        setScheduledTasks([...scheduledTasks, newTask]);
-        console.log("Added New task");
-    };
-
-    const taskListRef = useRef<typeof TaskList>(null);
+export const TaskContainer: React.FC<TaskContainerProps> = ({ type }) => {
+    const handleAddNewTask = () => {};
 
     return (
         <div className="h-full w-full bg-slate-200 rounded-lg p-6">
@@ -30,12 +18,12 @@ export const TaskContainer: React.FC<TaskContainerProps> = ({ type, tasks }) => 
                     <span className="font-bold text-xl">{type} -</span>
                 </div>
                 <div className="ml-auto">
-                    <Button className="bg-white text-black font-bold p-2">
+                    <Button className="bg-white text-black font-bold p-2" onClick={handleAddNewTask}>
                         <IoMdAdd size={20}></IoMdAdd>
                     </Button>
                 </div>
             </div>
-            <TaskList listType={type} tasks={scheduledTasks}></TaskList>
+            <TaskList listType={type}></TaskList>
         </div>
     );
 };

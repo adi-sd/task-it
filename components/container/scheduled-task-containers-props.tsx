@@ -1,19 +1,16 @@
 "use client";
 
-import { ScheduleTypes, TaskItem } from "@/lib/types";
 import { TaskContainer } from "./task-container";
-import { EmptyTask } from "../task/empty-task";
+import { ScheduleTypes } from "@prisma/client";
 
-interface ScheduledTaskContainersProps {
-    tasks: TaskItem[];
-}
+interface ScheduledTaskContainersProps {}
 
-export const ScheduledTaskContainers: React.FC<ScheduledTaskContainersProps> = ({ tasks }) => {
+export const ScheduledTaskContainers: React.FC<ScheduledTaskContainersProps> = () => {
     return (
         <div className="w-full h-[1000px] flex items-center justify-center gap-x-10 p-10">
-            <TaskContainer type={ScheduleTypes.Today} tasks={tasks}></TaskContainer>
-            <TaskContainer type={ScheduleTypes.Tomorrow} tasks={tasks}></TaskContainer>
-            <TaskContainer type={ScheduleTypes.ThisWeek} tasks={tasks}></TaskContainer>
+            <TaskContainer type={ScheduleTypes.Today}></TaskContainer>
+            <TaskContainer type={ScheduleTypes.Tomorrow}></TaskContainer>
+            <TaskContainer type={ScheduleTypes.ThisWeek}></TaskContainer>
         </div>
     );
 };

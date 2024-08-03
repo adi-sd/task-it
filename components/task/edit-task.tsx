@@ -1,6 +1,6 @@
 "use client";
 
-import { MutableRefObject, useEffect, useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { FaCheck } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -8,150 +8,111 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-import { Select } from "../commons/select";
-import { scheduleTypeOptions, ScheduleTypes, TaskItem } from "@/lib/types";
-import { TaskSchema } from "@/schemas";
+import { TaskUpdateSchema } from "@/schemas";
 import { Button } from "../ui/button";
+import { ScheduleTypes, Task } from "@prisma/client";
+import { updateTask } from "@/data/task";
 
 interface EditTaskProps {
-    toggleEdit: (value: boolean, currentTaskValue: TaskItem) => void;
-    taskItem: TaskItem;
+    toggleEdit: (value: boolean, currentTaskValue: Task) => void;
+    taskItem: Task;
 }
 
 export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
-    const headlineRef = useRef<HTMLInputElement>(null);
-    const descriptionRef = useRef<HTMLTextAreaElement>(null);
-    const scheduleRef = useRef<HTMLSelectElement>(null);
-    const submitButtonRef = useRef<HTMLButtonElement>(null);
-    const refArray = [headlineRef, descriptionRef, scheduleRef, submitButtonRef];
-
     const [isHidden, setIsHidden] = useState(false);
     const [isPending, startTransition] = useTransition();
-    const [updatedTask, setUpdatedTask] = useState(taskItem);
 
-    const form = useForm<z.infer<typeof TaskSchema>>({
-        resolver: zodResolver(TaskSchema),
+    const form = useForm<z.infer<typeof TaskUpdateSchema>>({
+        resolver: zodResolver(TaskUpdateSchema),
+        defaultValues: {
+            id: taskItem.id,
+            headline: taskItem.headline,
+            description: taskItem.description,
+            schedule: taskItem.schedule,
+        },
     });
 
-    const onSubmit = () => {
+    const onSubmit = (values: z.infer<typeof TaskUpdateSchema>) => {
         startTransition(() => {
-            console.log("submitted value - ", updatedTask);
-            setUpdatedTask(updatedTask);
-            setIsHidden(!isHidden); // Setting isEdit(Parent) to exact value of if Edit Task is showing
-            toggleEdit(isHidden, updatedTask);
+            updateTask(values).then(() => {
+                setIsHidden(!isHidden); // Setting isEdit(Parent) to exact value of if Edit Task is showing
+                toggleEdit(isHidden, values as Task);
+                // Call a server action to update the task in db
+            });
         });
     };
 
-    // useEffect(() => {
-    //     console.log("oldTask - ", taskItem);
-    //     console.log("newTask - ", tempTask);
-    // });
-
-    const handleEnterKeyDown = (event: any, currentReference: MutableRefObject<any>) => {
-        if (event.key === "ArrowDown") {
-            let currentRefIdx = refArray.indexOf(currentReference);
-            if (currentRefIdx === -1) return;
-            let nextRefIdx = currentRefIdx + 1;
-            if (nextRefIdx === refArray.length) nextRefIdx == 3;
-            refArray[nextRefIdx].current?.focus();
-        }
-    };
-
-    useEffect(() => {
-        headlineRef.current?.focus();
-    }, []);
-
     return (
         <div className="w-full h-full rounded-xl drop-shadow-lg flex flex-col" hidden={isHidden}>
-            {/* <div className="font-semibold text-neutral-600 flex items-center">
-                    <span>Edit - {taskItem.id}</span>
-                </div> */}
             <Form {...form}>
-                <form>
-                    <div className="flex flex-col gap-y-4">
-                        <div className="flex w-full">
+                <form onSubmit={form.handleSubmit(onSubmit)}>
+                    <div className="space-y-4">
+                        <div className="flex">
                             <FormField
                                 control={form.control}
                                 name="headline"
                                 render={({ field }) => (
-                                    <FormItem className="w-full mr-4">
+                                    <FormItem>
                                         <FormControl>
                                             <Input
                                                 {...field}
-                                                ref={headlineRef}
-                                                onKeyDown={(e) => handleEnterKeyDown(e, headlineRef)}
                                                 type="headline"
-                                                className="text-neutral-600"
-                                                value={updatedTask.headline}
-                                                onChange={(e) => {
-                                                    setUpdatedTask({ ...updatedTask, headline: e.target.value });
-                                                }}
+                                                disabled={isPending}
+                                                placeholder="Task Headline..."
+                                                className="font-semibold text-nowrap text-md  text-neutral-600"
                                             ></Input>
                                         </FormControl>
                                     </FormItem>
                                 )}
                             ></FormField>
-                            <div className="ml-auto flex gap-x-2">
-                                <Button
-                                    disabled={isPending}
-                                    onClick={() => onSubmit()}
-                                    ref={submitButtonRef}
-                                    onKeyDown={(e) => handleEnterKeyDown(e, submitButtonRef)}
-                                >
-                                    <FaCheck size={15}></FaCheck>
-                                </Button>
-                            </div>
+                            <Button type="submit" className="w-fit ml-auto" disabled={isPending}>
+                                <FaCheck></FaCheck>
+                            </Button>
                         </div>
-                        <div className="text-lg w-full">
-                            <FormField
-                                control={form.control}
-                                name="description"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        {/* <FormLabel>Description</FormLabel> */}
-                                        <FormControl>
-                                            <Textarea
-                                                {...field}
-                                                ref={descriptionRef}
-                                                onKeyDown={(e) => handleEnterKeyDown(e, descriptionRef)}
-                                                value={updatedTask.description}
-                                                onChange={(e) => {
-                                                    setUpdatedTask({ ...updatedTask, description: e.target.value });
-                                                }}
-                                            ></Textarea>
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            ></FormField>
-                        </div>
-                        <div className="text-lg w-full">
-                            <FormField
-                                control={form.control}
-                                name="schedule"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        {/* <FormLabel>Description</FormLabel> */}
-                                        <FormControl>
-                                            <Select
-                                                {...field}
-                                                ref={scheduleRef}
-                                                onKeyDown={(e) => handleEnterKeyDown(e, scheduleRef)}
-                                                options={scheduleTypeOptions}
-                                                value={updatedTask.schedule}
-                                                onChange={(e) => {
-                                                    setUpdatedTask({
-                                                        ...updatedTask,
-                                                        schedule: e.target.value as ScheduleTypes,
-                                                    });
-                                                }}
-                                            ></Select>
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            ></FormField>
-                        </div>
+                        <FormField
+                            control={form.control}
+                            name="description"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                        <Textarea
+                                            {...field}
+                                            placeholder="Task Description..."
+                                            disabled={isPending}
+                                        ></Textarea>
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        ></FormField>
+                        <FormField
+                            control={form.control}
+                            name="schedule"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                        <Select
+                                            disabled={isPending}
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Schedule This Task..."></SelectValue>
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value={ScheduleTypes.Today}>Today</SelectItem>
+                                                <SelectItem value={ScheduleTypes.Tomorrow}>Tomorrow</SelectItem>
+                                                <SelectItem value={ScheduleTypes.ThisWeek}>This Week</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        ></FormField>
                     </div>
                 </form>
             </Form>

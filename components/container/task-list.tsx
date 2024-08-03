@@ -1,20 +1,21 @@
 // Motion
 import { Reorder } from "framer-motion";
-import { useEffect, useImperativeHandle, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { EmptyTaskTemplate, ScheduleTypes, TaskItem } from "@/lib/types";
-import { Task } from "../task/task";
+import { EmptyTaskTemplate } from "@/lib/types";
+import { TaskComponent } from "../task/task-component";
+import { addTask, getAllTasksOfType } from "@/data/task";
+import { Task, ScheduleTypes } from "@prisma/client";
 
 export interface TaskListProps {
-    tasks: TaskItem[];
     listType: ScheduleTypes;
 }
 
-export const TaskList: React.FC<TaskListProps> = ({ tasks, listType }) => {
+export const TaskList: React.FC<TaskListProps> = ({ listType }) => {
     const listRef = useRef(null);
-    const [currentTasks, setCurrentTasks] = useState(tasks);
+    const [currentTasks, setCurrentTasks] = useState<Task[]>([]);
 
-    const handleOnDrag = (event: React.DragEvent, draggedTask: TaskItem) => {
+    const handleOnDrag = (event: React.DragEvent, draggedTask: Task) => {
         event.dataTransfer.setData("draggedTask", JSON.stringify(draggedTask));
     };
 
@@ -35,12 +36,18 @@ export const TaskList: React.FC<TaskListProps> = ({ tasks, listType }) => {
     const handleAddNewTask = () => {
         let newTask = EmptyTaskTemplate;
         newTask.schedule = listType;
-        setCurrentTasks([...currentTasks, newTask]);
+        addTask(newTask as Task);
+        setCurrentTasks([...currentTasks, newTask as Task]);
     };
 
     useEffect(() => {
-        console.log(currentTasks);
-    });
+        const fetchTasks = async () => {
+            const result = await getAllTasksOfType(listType);
+            console.log(result);
+            setCurrentTasks(result);
+        };
+        fetchTasks();
+    }, [listType, setCurrentTasks]);
 
     return (
         <div
@@ -49,13 +56,14 @@ export const TaskList: React.FC<TaskListProps> = ({ tasks, listType }) => {
             onDrop={handleOnDrop}
             ref={listRef}
         >
+            <div onClick={handleAddNewTask}>Add New</div>
             <Reorder.Group values={currentTasks} onReorder={setCurrentTasks} className="flex flex-col gap-y-2 p-2">
                 {currentTasks && currentTasks.length !== 0
                     ? currentTasks.map((task) => {
                           return (
                               <div key={task.id} draggable onDragStart={(e) => handleOnDrag(e, task)}>
                                   <Reorder.Item value={task} className="h-fit">
-                                      <Task task={task}></Task>
+                                      <TaskComponent task={task}></TaskComponent>
                                   </Reorder.Item>
                               </div>
                           );

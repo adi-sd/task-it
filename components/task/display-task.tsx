@@ -4,21 +4,27 @@ import { useState } from "react";
 import { FaPencilAlt } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
 
-import { TaskItem } from "@/lib/types";
 import { Button } from "../ui/button";
+import { Task } from "@prisma/client";
+import { deleteTaskById } from "@/data/task";
 
 interface DisplayTaskProps {
-    toggleEdit: (value: boolean, currentTaskValue: TaskItem) => void;
-    taskItem: TaskItem;
+    toggleEdit: (value: boolean, currentTaskValue: Task) => void;
+    taskItem: Task;
 }
 
 export const DisplayTask: React.FC<DisplayTaskProps> = ({ toggleEdit, taskItem }) => {
     const [isHidden, setIsHidden] = useState(false);
 
     const onEditClicked = () => {
-        console.log("Clicked Edit Task from Display task!");
         setIsHidden(!isHidden);
         toggleEdit(!isHidden, taskItem); // Setting isEdit(Parent) opposite of if the Display task is showing
+    };
+
+    const onDeleteClicked = (id: string) => {
+        deleteTaskById(id).then(() => {
+            console.log("Task Deleted", id);
+        });
     };
 
     return (
@@ -32,7 +38,7 @@ export const DisplayTask: React.FC<DisplayTaskProps> = ({ toggleEdit, taskItem }
                         <Button onClick={onEditClicked} className="rounded-full">
                             <FaPencilAlt size={15}></FaPencilAlt>
                         </Button>
-                        <Button onClick={onEditClicked} className="rounded-full">
+                        <Button onClick={() => onDeleteClicked(taskItem.id)} className="rounded-full">
                             <FaTrashAlt size={15}></FaTrashAlt>
                         </Button>
                     </div>

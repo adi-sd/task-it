@@ -20,11 +20,11 @@ enum ScheduleTypes {
 }
 
 model Task {
-    id             String          @id @default(cuid())
+    id             String           @id @default(cuid())
     headline       String
     description    String
-    isCompleted    Boolean
-    schedule       ScheduleTypes   @default(Today)
-    createdAt      DateTime
-    lastModifiedAt DateTime?
+    isCompleted    Boolean          @default(false)
+    schedule       ScheduleTypes    @default(Today)
+    createdAt      DateTime?        @default(now())
+    lastModifiedAt DateTime?        @default(now())
 }
