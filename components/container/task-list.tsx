@@ -4,7 +4,7 @@ import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 
 import { EmptyTaskTemplate } from "@/lib/types";
 import { TaskComponent } from "../task/task-component";
-import { addNewTask, getAllTasksOfType } from "@/data/task";
+import { addNewTask, deleteTaskById, getAllTasksOfType } from "@/data/task";
 import { Task, ScheduleTypes } from "@prisma/client";
 
 interface TaskListProps {
@@ -43,6 +43,13 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ listType }, ref) => {
         setCurrentTasks([...currentTasks, newDbTask]);
     };
 
+    const handleDeleteTask = (id: string) => {
+        deleteTaskById(id).then(() => {
+            console.log("Task Deleted", id);
+            setCurrentTasks(currentTasks.filter((task) => task.id != id));
+        });
+    };
+
     useEffect(() => {
         const fetchTasks = async () => {
             const result = await getAllTasksOfType(listType);
@@ -50,11 +57,15 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ listType }, ref) => {
             setCurrentTasks(result);
         };
         fetchTasks();
-    }, [listType, setCurrentTasks]);
+    }, [listType]);
 
     useImperativeHandle(ref, () => ({
         handleAddNewTask: handleAddNewTask,
     }));
+
+    useEffect(() => {
+        // Task List Changed
+    }, [currentTasks]);
 
     return (
         <div
@@ -69,7 +80,10 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ listType }, ref) => {
                           return (
                               <div key={task.id} draggable onDragStart={(e) => handleOnDrag(e, task)}>
                                   <Reorder.Item value={task} className="h-fit">
-                                      <TaskComponent task={task}></TaskComponent>
+                                      <TaskComponent
+                                          task={task}
+                                          handleDeleteTask={() => handleDeleteTask(task.id)}
+                                      ></TaskComponent>
                                   </Reorder.Item>
                               </div>
                           );

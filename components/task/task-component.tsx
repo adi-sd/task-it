@@ -12,9 +12,10 @@ import { Task } from "@prisma/client";
 
 interface TaskProps {
     task: Task;
+    handleDeleteTask: (taskId: string) => void;
 }
 
-export const TaskComponent: React.FC<TaskProps> = ({ task }) => {
+export const TaskComponent: React.FC<TaskProps> = ({ task, handleDeleteTask }) => {
     const [editTask, setEditTask] = useState(false);
     const [taskItemValue, setTaskItemValue] = useState(task);
 
@@ -34,7 +35,11 @@ export const TaskComponent: React.FC<TaskProps> = ({ task }) => {
                 editTask ? (
                     <EditTask toggleEdit={toggleEdit} taskItem={taskItemValue}></EditTask>
                 ) : (
-                    <DisplayTask toggleEdit={toggleEdit} taskItem={taskItemValue}></DisplayTask>
+                    <DisplayTask
+                        toggleEdit={toggleEdit}
+                        taskItem={taskItemValue}
+                        handleDeleteTask={handleDeleteTask}
+                    ></DisplayTask>
                 )
             ) : (
                 <EditTask toggleEdit={toggleEdit} taskItem={taskItemValue}></EditTask>

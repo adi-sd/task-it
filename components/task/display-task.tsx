@@ -6,14 +6,14 @@ import { FaTrashAlt } from "react-icons/fa";
 
 import { Button } from "../ui/button";
 import { Task } from "@prisma/client";
-import { deleteTaskById } from "@/data/task";
 
 interface DisplayTaskProps {
     toggleEdit: (value: boolean, currentTaskValue: Task) => void;
+    handleDeleteTask: (taskId: string) => void;
     taskItem: Task;
 }
 
-export const DisplayTask: React.FC<DisplayTaskProps> = ({ toggleEdit, taskItem }) => {
+export const DisplayTask: React.FC<DisplayTaskProps> = ({ toggleEdit, handleDeleteTask, taskItem }) => {
     const [isHidden, setIsHidden] = useState(false);
 
     const onEditClicked = () => {
@@ -22,9 +22,7 @@ export const DisplayTask: React.FC<DisplayTaskProps> = ({ toggleEdit, taskItem }
     };
 
     const onDeleteClicked = (id: string) => {
-        deleteTaskById(id).then(() => {
-            console.log("Task Deleted", id);
-        });
+        handleDeleteTask(id);
     };
 
     return (
