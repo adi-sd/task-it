@@ -4,7 +4,7 @@ import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 
 import { EmptyTaskTemplate } from "@/lib/types";
 import { TaskComponent } from "../task/task-component";
-import { addNewTask, deleteTaskById, getAllTasksOfType } from "@/data/task";
+import { addNewTask, deleteTaskById, getAllTasksOfType, updateTaskSchedule } from "@/data/task";
 import { Task, ScheduleTypes } from "@prisma/client";
 
 interface TaskListProps {
@@ -18,8 +18,21 @@ export interface TaskListRef {
 const TaskList = forwardRef<TaskListRef, TaskListProps>(({ listType }, ref) => {
     const [currentTasks, setCurrentTasks] = useState<Task[]>([]);
 
-    const handleOnDrag = (event: React.DragEvent, draggedTask: Task) => {
-        event.dataTransfer.setData("draggedTask", JSON.stringify(draggedTask));
+    // const handleOnDrag = (event: React.DragEvent, draggedTask: Task) => {
+    //     event.dataTransfer.setData("draggedTask", JSON.stringify(draggedTask));
+    // };
+
+    const handleOnDragStart = (event: React.DragEvent, draggedTask: Task) => {
+        if (event.dataTransfer) {
+            event.dataTransfer.setData("draggedTask", JSON.stringify(draggedTask));
+            setTimeout(() => {
+                setCurrentTasks((currentTasks) =>
+                    currentTasks.filter((task) => {
+                        task.id !== draggedTask.id;
+                    })
+                );
+            }, 100);
+        }
     };
 
     const handleDragOver = (event: React.DragEvent) => {
@@ -31,8 +44,12 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ listType }, ref) => {
     const handleOnDrop = (event: React.DragEvent) => {
         const draggedTask = JSON.parse(event.dataTransfer.getData("draggedTask"));
         if (draggedTask) {
-            console.log("dragged - ", draggedTask);
-            setCurrentTasks([...currentTasks, draggedTask]);
+            if (!currentTasks.find((task) => task.id === draggedTask.id)) {
+                console.log("dragged - ", draggedTask);
+                updateTaskSchedule(draggedTask.id, listType).then(() => {
+                    setCurrentTasks([...currentTasks, draggedTask]);
+                });
+            }
         }
     };
 
@@ -78,7 +95,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ listType }, ref) => {
                 {currentTasks && currentTasks.length !== 0
                     ? currentTasks.map((task) => {
                           return (
-                              <div key={task.id} draggable onDragStart={(e) => handleOnDrag(e, task)}>
+                              <div key={task.id} draggable onDragStart={(e) => handleOnDragStart(e, task)}>
                                   <Reorder.Item value={task} className="h-fit">
                                       <TaskComponent
                                           task={task}

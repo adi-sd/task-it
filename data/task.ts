@@ -75,3 +75,25 @@ export const deleteTaskById = async (id: string) => {
         throw error;
     }
 };
+
+export const updateTaskSchedule = async (taskId: string, type: ScheduleTypes) => {
+    try {
+        const existingTask = await db.task.findUnique({
+            where: {
+                id: taskId,
+            },
+        });
+        if (!existingTask) {
+            throw new Error("Task Not Found with given ID");
+        }
+        await db.task.update({
+            where: { id: existingTask.id },
+            data: {
+                schedule: type,
+            },
+        });
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
