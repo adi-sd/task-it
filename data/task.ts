@@ -30,9 +30,10 @@ export const getAllTasksOfType = async (type: ScheduleTypes) => {
     }
 };
 
-export const addTask = async (task: Task) => {
+export const addNewTask = async (task: Task) => {
     try {
-        await db.task.create({ data: task });
+        const newTask = await db.task.create({ data: task });
+        return newTask;
     } catch (error) {
         console.error(error);
         throw error;

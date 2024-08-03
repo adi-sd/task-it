@@ -1,15 +1,22 @@
 import { IoMdAdd } from "react-icons/io";
 
 import { Button } from "../ui/button";
-import { TaskList } from "./task-list";
-import { ScheduleTypes, Task } from "@prisma/client";
+import { TaskList, TaskListRef } from "./task-list";
+import { ScheduleTypes } from "@prisma/client";
+import { useRef } from "react";
 
 export interface TaskContainerProps {
     type: ScheduleTypes;
 }
 
 export const TaskContainer: React.FC<TaskContainerProps> = ({ type }) => {
-    const handleAddNewTask = () => {};
+    const taskListRef = useRef<TaskListRef>(null);
+
+    const handleAddNewTask = () => {
+        if (taskListRef.current) {
+            taskListRef.current.handleAddNewTask();
+        }
+    };
 
     return (
         <div className="h-full w-full bg-slate-200 rounded-lg p-6">
@@ -23,7 +30,7 @@ export const TaskContainer: React.FC<TaskContainerProps> = ({ type }) => {
                     </Button>
                 </div>
             </div>
-            <TaskList listType={type}></TaskList>
+            <TaskList listType={type} ref={taskListRef}></TaskList>
         </div>
     );
 };

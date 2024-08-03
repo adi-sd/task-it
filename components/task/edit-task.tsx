@@ -32,6 +32,7 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
             headline: taskItem.headline,
             description: taskItem.description,
             schedule: taskItem.schedule,
+            isCompleted: taskItem.isCompleted,
         },
     });
 
