@@ -13,9 +13,10 @@ import { ScheduleTypes, Task } from "@prisma/client";
 interface TaskProps {
     task: Task;
     handleDeleteTask: (taskId: string) => void;
+    handleUpdateTask: (task: Task) => Promise<void>;
 }
 
-export const TaskComponent: React.FC<TaskProps> = ({ task, handleDeleteTask }) => {
+export const TaskComponent: React.FC<TaskProps> = ({ task, handleDeleteTask, handleUpdateTask }) => {
     const [editTask, setEditTask] = useState(false);
     const [taskItemValue, setTaskItemValue] = useState(task);
 
@@ -53,6 +54,7 @@ export const TaskComponent: React.FC<TaskProps> = ({ task, handleDeleteTask }) =
                         toggleEdit={toggleEdit}
                         taskItem={taskItemValue}
                         handleDeleteTask={handleDeleteTask}
+                        handleUpdateTask={handleUpdateTask}
                     ></EditTask>
                 ) : (
                     <DisplayTask
@@ -66,6 +68,7 @@ export const TaskComponent: React.FC<TaskProps> = ({ task, handleDeleteTask }) =
                     toggleEdit={toggleEdit}
                     taskItem={taskItemValue}
                     handleDeleteTask={handleDeleteTask}
+                    handleUpdateTask={handleUpdateTask}
                 ></EditTask>
             )}
         </div>

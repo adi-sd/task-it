@@ -30,6 +30,20 @@ export const getAllTasksOfType = async (type: ScheduleTypes) => {
     }
 };
 
+export const getTaskById = async (taskId: string) => {
+    try {
+        const task = await db.task.findUnique({
+            where: {
+                id: taskId,
+            },
+        });
+        return task;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
 export const addNewTask = async (task: Task) => {
     try {
         const newTask = await db.task.create({ data: task });
@@ -50,12 +64,13 @@ export const updateTask = async (values: z.infer<typeof TaskUpdateSchema>) => {
         if (!existingTask) {
             throw new Error("Task Not Found with given ID");
         }
-        await db.task.update({
+        const updatedTask = await db.task.update({
             where: { id: existingTask.id },
             data: {
                 ...values,
             },
         });
+        return updatedTask;
     } catch (error) {
         console.error(error);
         throw error;
@@ -86,12 +101,13 @@ export const updateTaskSchedule = async (taskId: string, type: ScheduleTypes) =>
         if (!existingTask) {
             throw new Error("Task Not Found with given ID");
         }
-        await db.task.update({
+        const updatedTask = await db.task.update({
             where: { id: existingTask.id },
             data: {
                 schedule: type,
             },
         });
+        return updatedTask;
     } catch (error) {
         console.error(error);
         throw error;

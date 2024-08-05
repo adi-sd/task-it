@@ -14,15 +14,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { TaskUpdateSchema } from "@/schemas";
 import { Button } from "../ui/button";
 import { ScheduleTypes, Task } from "@prisma/client";
-import { updateTask } from "@/data/task";
 
 interface EditTaskProps {
     toggleEdit: (value: boolean, currentTaskValue: Task) => void;
     handleDeleteTask: (taskId: string) => void;
+    handleUpdateTask: (task: Task) => Promise<void>;
     taskItem: Task;
 }
 
-export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, handleDeleteTask, taskItem }) => {
+export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, handleDeleteTask, handleUpdateTask, taskItem }) => {
     const [isHidden, setIsHidden] = useState(false);
     const [isPending, startTransition] = useTransition();
 
@@ -39,7 +39,7 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, handleDeleteTask
 
     const onSubmit = (values: z.infer<typeof TaskUpdateSchema>) => {
         startTransition(() => {
-            updateTask(values).then(() => {
+            handleUpdateTask(values as Task).then(() => {
                 setIsHidden(!isHidden); // Setting isEdit(Parent) to exact value of if Edit Task is showing
                 toggleEdit(isHidden, values as Task);
                 // Call a server action to update the task in db
