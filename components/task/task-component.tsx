@@ -49,7 +49,11 @@ export const TaskComponent: React.FC<TaskProps> = ({ task, handleDeleteTask }) =
         >
             {taskItemValue.headline !== "" ? (
                 editTask ? (
-                    <EditTask toggleEdit={toggleEdit} taskItem={taskItemValue}></EditTask>
+                    <EditTask
+                        toggleEdit={toggleEdit}
+                        taskItem={taskItemValue}
+                        handleDeleteTask={handleDeleteTask}
+                    ></EditTask>
                 ) : (
                     <DisplayTask
                         toggleEdit={toggleEdit}
@@ -58,7 +62,11 @@ export const TaskComponent: React.FC<TaskProps> = ({ task, handleDeleteTask }) =
                     ></DisplayTask>
                 )
             ) : (
-                <EditTask toggleEdit={toggleEdit} taskItem={taskItemValue}></EditTask>
+                <EditTask
+                    toggleEdit={toggleEdit}
+                    taskItem={taskItemValue}
+                    handleDeleteTask={handleDeleteTask}
+                ></EditTask>
             )}
         </div>
     );

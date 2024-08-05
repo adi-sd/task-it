@@ -1,10 +1,13 @@
+import { useRef } from "react";
 import { IoMdAdd } from "react-icons/io";
+import { FaClipboardList } from "react-icons/fa";
 
-import { Button } from "../ui/button";
+import { twMerge } from "tailwind-merge";
+
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
 import { TaskList, TaskListRef } from "./task-list";
 import { ScheduleTypes } from "@prisma/client";
-import { useRef } from "react";
-import { twMerge } from "tailwind-merge";
 
 export interface TaskContainerProps {
     type: ScheduleTypes;
@@ -19,44 +22,65 @@ export const TaskContainer: React.FC<TaskContainerProps> = ({ type }) => {
         }
     };
 
-    const getBgColor = (type: ScheduleTypes) => {
+    const getBgColor = () => {
         switch (type) {
             case "Today":
-                return "bg-red-200";
+                return "bg-red-200/60";
             case "Tomorrow":
-                return "bg-orange-200";
+                return "bg-orange-200/60";
             case "ThisWeek":
-                return "bg-sky-200";
+                return "bg-sky-200/60";
         }
     };
 
-    const getBorderColor = (type: ScheduleTypes) => {
+    const getHeaderBgColor = () => {
         switch (type) {
             case "Today":
-                return "border-red-500";
+                return "bg-red-300";
             case "Tomorrow":
-                return "border-yellow-500";
+                return "bg-orange-300";
             case "ThisWeek":
-                return "border-sky-500";
+                return "bg-sky-300";
+        }
+    };
+
+    const getTextColor = () => {
+        switch (type) {
+            case "Today":
+                return "text-red-500";
+            case "Tomorrow":
+                return "text-yellow-600";
+            case "ThisWeek":
+                return "text-sky-500";
         }
     };
 
     return (
-        <div
-            className={twMerge(
-                "h-full w-full bg--100 border-2 rounded-lg p-4",
-                `${getBgColor(type)}`,
-                `${getBorderColor(type)}`
-            )}
-        >
-            <div className="h-[5%] w-full flex items-center mt-[-8px] mb-2">
-                <div className="mr-auto">
-                    <span className="font-bold text-lg">{type} -</span>
+        <div className={twMerge("h-full w-full rounded-lg overflow-hidden", `${getBgColor()}`)}>
+            <div className={twMerge("h-[5%] w-full flex items-center px-4 py-8", getHeaderBgColor())}>
+                <div className="flex items-center justify-center text-middle mr-auto">
+                    <FaClipboardList
+                        size={25}
+                        className={twMerge(
+                            "mr-[5px] mt-[-3px] ml-[-3px] text-white shadow-sm",
+                            `hover:${getTextColor()}`
+                        )}
+                    ></FaClipboardList>
+                    <span className={twMerge("font-bold text-xl", `${getTextColor()}`)}>{type}</span>
                 </div>
                 <div className="ml-auto">
-                    <Button className="bg-white text-black font-bold p-2" onClick={handleAddNewTask}>
-                        <IoMdAdd size={20}></IoMdAdd>
-                    </Button>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button className="bg-white text-black font-bold p-2 hover:scale-105" onClick={handleAddNewTask}>
+                                    <IoMdAdd size={20}></IoMdAdd>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Add a new Task</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                 </div>
             </div>
             <TaskList listType={type} ref={taskListRef}></TaskList>

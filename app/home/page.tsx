@@ -5,7 +5,7 @@ import { ScheduleTypes, Task } from "@prisma/client";
 
 const HomePage = () => {
     return (
-        <div className="">
+        <div className="w-full h-full overflow-hidden">
             <ScheduledTaskContainers></ScheduledTaskContainers>
         </div>
     );

@@ -3,9 +3,10 @@ import { Reorder } from "framer-motion";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 
 import { EmptyTaskTemplate } from "@/lib/types";
-import { TaskComponent } from "../task/task-component";
+import { TaskComponent } from "@/components/task/task-component";
 import { addNewTask, deleteTaskById, getAllTasksOfType, updateTaskSchedule } from "@/data/task";
 import { Task, ScheduleTypes } from "@prisma/client";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface TaskListProps {
     listType: ScheduleTypes;
@@ -31,7 +32,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ listType }, ref) => {
                         task.id !== draggedTask.id;
                     })
                 );
-            }, 100);
+            }, 1000);
         }
     };
 
@@ -85,13 +86,9 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ listType }, ref) => {
     }, [currentTasks]);
 
     return (
-        <div className="h-[95%] w-full rounded-lg" onDragOver={handleDragOver} onDrop={handleOnDrop}>
+        <ScrollArea className="h-[95%] w-full rounded-lg p-4" onDragOver={handleDragOver} onDrop={handleOnDrop}>
             {/* <div onClick={handleAddNewTask}>Add New</div> */}
-            <Reorder.Group
-                values={currentTasks}
-                onReorder={setCurrentTasks}
-                className="flex flex-col gap-y-2"
-            >
+            <Reorder.Group values={currentTasks} onReorder={setCurrentTasks} className="flex flex-col gap-y-2">
                 {currentTasks && currentTasks.length !== 0
                     ? currentTasks.map((task) => {
                           return (
@@ -107,7 +104,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ listType }, ref) => {
                       })
                     : null}
             </Reorder.Group>
-        </div>
+        </ScrollArea>
     );
 });
 

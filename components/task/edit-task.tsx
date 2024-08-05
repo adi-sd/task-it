@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { FaCheck } from "react-icons/fa";
+import { FaCheck, FaTrashAlt } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import { TaskUpdateSchema } from "@/schemas";
@@ -18,10 +18,11 @@ import { updateTask } from "@/data/task";
 
 interface EditTaskProps {
     toggleEdit: (value: boolean, currentTaskValue: Task) => void;
+    handleDeleteTask: (taskId: string) => void;
     taskItem: Task;
 }
 
-export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
+export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, handleDeleteTask, taskItem }) => {
     const [isHidden, setIsHidden] = useState(false);
     const [isPending, startTransition] = useTransition();
 
@@ -44,6 +45,10 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                 // Call a server action to update the task in db
             });
         });
+    };
+
+    const onDeleteClicked = (id: string) => {
+        handleDeleteTask(id);
     };
 
     return (
@@ -69,9 +74,14 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, taskItem }) => {
                                     </FormItem>
                                 )}
                             ></FormField>
-                            <Button type="submit" className="w-fit ml-auto" disabled={isPending}>
-                                <FaCheck></FaCheck>
-                            </Button>
+                            <div className="ml-auto flex gap-x-2">
+                                <Button type="submit" className="w-fit ml-auto" disabled={isPending}>
+                                    <FaCheck></FaCheck>
+                                </Button>
+                                <Button onClick={() => onDeleteClicked(taskItem.id)} className="rounded-full">
+                                    <FaTrashAlt size={15}></FaTrashAlt>
+                                </Button>
+                            </div>
                         </div>
                         <FormField
                             control={form.control}
