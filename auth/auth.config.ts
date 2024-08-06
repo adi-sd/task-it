@@ -1,9 +1,7 @@
 import { CredentialsSignin, type NextAuthConfig } from "next-auth";
 import bcrypt from "bcryptjs";
 
-import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
-import SpotifyProvider from "next-auth/providers/spotify";
 import Credentials from "next-auth/providers/credentials";
 
 import { LoginSchema } from "@/schemas";
@@ -35,6 +33,7 @@ export default {
 
                     const passwordMatch = await bcrypt.compare(password, user.password);
                     if (passwordMatch) {
+                        console.log("Login Successful!");
                         return user;
                     } else {
                         throw new CredentialsSignin("Wrong password!");

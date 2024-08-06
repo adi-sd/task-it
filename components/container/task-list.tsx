@@ -1,6 +1,6 @@
 // Motion
 import { Reorder } from "framer-motion";
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, use, useEffect, useImperativeHandle, useRef, useState } from "react";
 
 import { EmptyTaskTemplate } from "@/types/types";
 import { TaskComponent } from "@/components/task/task-component";
@@ -10,6 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { BeatLoader } from "react-spinners";
 import { twMerge } from "tailwind-merge";
 import { getSignatureColor, getTextColor } from "@/lib/utils";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 interface TaskListProps {
     className?: string;
@@ -23,6 +24,7 @@ export interface TaskListRef {
 export const revalidate = 0;
 
 const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }, ref) => {
+    const user = useCurrentUser();
     const taskListRef = useRef<HTMLDivElement>(null);
     const [currentTasks, setCurrentTasks] = useState<Task[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -102,41 +104,52 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
             onDragLeave={handleDragLeave}
             ref={taskListRef}
         >
-            {!isLoading ? (
-                currentTasks && currentTasks.length !== 0 ? (
-                    <ScrollArea className="w-full h-full flex items-center justify-center">
-                        <Reorder.Group
-                            values={currentTasks}
-                            onReorder={setCurrentTasks}
-                            className="w-full h-full flex flex-col gap-y-2"
+            {user ? (
+                !isLoading ? (
+                    currentTasks && currentTasks.length !== 0 ? (
+                        <ScrollArea className="w-full h-full flex items-center justify-center">
+                            <Reorder.Group
+                                values={currentTasks}
+                                onReorder={setCurrentTasks}
+                                className="w-full h-full flex flex-col gap-y-2"
+                            >
+                                {currentTasks.map((task) => {
+                                    return (
+                                        <div key={task.id} draggable onDragStart={(e) => handleOnDragStart(e, task)}>
+                                            <Reorder.Item value={task} className="h-fit">
+                                                <TaskComponent
+                                                    task={task}
+                                                    handleDeleteTask={() => handleDeleteTask(task.id)}
+                                                ></TaskComponent>
+                                            </Reorder.Item>
+                                        </div>
+                                    );
+                                })}
+                            </Reorder.Group>
+                        </ScrollArea>
+                    ) : (
+                        <div
+                            className={twMerge(
+                                "h-full w-full flex items-center justify-center text-sm",
+                                `${getTextColor(listType)}`
+                            )}
                         >
-                            {currentTasks.map((task) => {
-                                return (
-                                    <div key={task.id} draggable onDragStart={(e) => handleOnDragStart(e, task)}>
-                                        <Reorder.Item value={task} className="h-fit">
-                                            <TaskComponent
-                                                task={task}
-                                                handleDeleteTask={() => handleDeleteTask(task.id)}
-                                            ></TaskComponent>
-                                        </Reorder.Item>
-                                    </div>
-                                );
-                            })}
-                        </Reorder.Group>
-                    </ScrollArea>
+                            <p>No Tasks Found!</p>
+                        </div>
+                    )
                 ) : (
-                    <div
-                        className={twMerge(
-                            "h-full w-full flex items-center justify-center text-sm",
-                            `${getTextColor(listType)}`
-                        )}
-                    >
-                        <p>No Tasks Found!</p>
+                    <div className="h-full w-full flex items-center justify-center">
+                        <BeatLoader size={10} color={getSignatureColor(listType)} speedMultiplier={2}></BeatLoader>
                     </div>
                 )
             ) : (
-                <div className="h-full w-full flex items-center justify-center">
-                    <BeatLoader size={10} color={getSignatureColor(listType)} speedMultiplier={2}></BeatLoader>
+                <div
+                    className={twMerge(
+                        "h-full w-full flex items-center justify-center text-sm",
+                        `${getTextColor(listType)}`
+                    )}
+                >
+                    <p>Please Login to Proceed!</p>
                 </div>
             )}
         </div>

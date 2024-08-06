@@ -14,31 +14,32 @@ export const {
 } = NextAuth({
     pages: {
         signIn: "/auth/login",
+        signOut: "/auth/logout",
         error: "/auth/error",
     },
     events: {
-        async linkAccount({ user }) {
-            await db.user.update({
-                where: { id: user.id },
-                data: { emailVerified: new Date() },
-            });
-        },
+        // async linkAccount({ user }) {
+        //     await db.user.update({
+        //         where: { id: user.id },
+        //         data: { emailVerified: new Date() },
+        //     });
+        // },
     },
     callbacks: {
-        async signIn({ user, account }) {
-            // Allow OAuth without email verification
-            if (account?.provider !== "credentials") {
-                return true;
-            }
+        // async signIn({ user, account }) {
+        //     // Allow OAuth without email verification
+        //     if (account?.provider !== "credentials") {
+        //         return true;
+        //     }
 
-            // Prevent Sign in without email verification
-            const existingUser = await getUserById(user.id!);
-            if (!existingUser || !existingUser.emailVerified) {
-                return false;
-            }
+        //     // Prevent Sign in without email verification
+        //     const existingUser = await getUserById(user.id!);
+        //     if (!existingUser) {
+        //         return false;
+        //     }
 
-            return true;
-        },
+        //     return true;
+        // },
         async session({ token, session }) {
             if (token.sub && session.user) {
                 session.user.id = token.sub;

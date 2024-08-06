@@ -1,5 +1,7 @@
 "use client";
 
+import { toast } from "sonner";
+
 import { logout } from "@/actions/logout";
 
 interface LogoutButtonProps {
@@ -8,7 +10,13 @@ interface LogoutButtonProps {
 
 const LogoutButton: React.FC<LogoutButtonProps> = ({ children }) => {
     const onClick = async () => {
-        await logout();
+        await logout()
+            .then(() => {
+                toast.success("Logged out successfully!");
+            })
+            .catch(() => {
+                toast.error("Failed to logout!");
+            });
     };
 
     return (
