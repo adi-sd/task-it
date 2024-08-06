@@ -43,7 +43,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
         if (event.dataTransfer && event.dataTransfer.types[0] === "text/plain") {
             event.preventDefault();
             if (taskListRef.current) {
-                taskListRef.current.classList.add("border-dashed", "border-2", "border-gray-500");
+                taskListRef.current.classList.add("rounded-b-lg", "border-dashed", "border-2", "border-gray-500");
             }
         }
     };
