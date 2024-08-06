@@ -2,14 +2,14 @@
 import { Reorder } from "framer-motion";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 
-import { EmptyTaskTemplate } from "@/lib/types";
+import { EmptyTaskTemplate } from "@/types/types";
 import { TaskComponent } from "@/components/task/task-component";
 import { addNewTask, deleteTaskById, getAllTasksOfType, updateTask, updateTaskSchedule } from "@/data/task";
 import { Task, ScheduleTypes } from "@prisma/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { BeatLoader } from "react-spinners";
 import { twMerge } from "tailwind-merge";
-import { getBgColor, getSignatureColor, getTextColor } from "@/lib/utils";
+import { getSignatureColor, getTextColor } from "@/lib/utils";
 
 interface TaskListProps {
     className?: string;
