@@ -1,6 +1,6 @@
 // Motion
 import { Reorder } from "framer-motion";
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 
 import { EmptyTaskTemplate } from "@/lib/types";
 import { TaskComponent } from "@/components/task/task-component";
@@ -8,8 +8,9 @@ import { addNewTask, deleteTaskById, getAllTasksOfType, updateTask, updateTaskSc
 import { Task, ScheduleTypes } from "@prisma/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { BeatLoader } from "react-spinners";
-import { twMerge } from "tailwind-merge";
-import { getSignatureColor, getTextColor } from "@/lib/utils";
+import { twJoin, twMerge } from "tailwind-merge";
+import { getBgColor, getSignatureColor, getTextColor } from "@/lib/utils";
+import { get } from "http";
 
 interface TaskListProps {
     listType: ScheduleTypes;
@@ -19,38 +20,48 @@ export interface TaskListRef {
     handleAddNewTask: () => void;
 }
 
+export const revalidate = 0;
+
 const TaskList = forwardRef<TaskListRef, TaskListProps>(({ listType }, ref) => {
+    const taskListRef = useRef<HTMLDivElement>(null);
     const [currentTasks, setCurrentTasks] = useState<Task[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     const handleOnDragStart = (event: React.DragEvent, draggedTask: Task) => {
         if (event.dataTransfer) {
-            event.dataTransfer.setData("draggedTask", JSON.stringify(draggedTask));
+            event.dataTransfer.setData("text/plain", JSON.stringify(draggedTask));
+            event.dataTransfer.effectAllowed = "move";
             setTimeout(() => {
-                setCurrentTasks((currentTasks) =>
-                    currentTasks.filter((task) => {
-                        task.id !== draggedTask.id;
-                    })
-                );
-            }, 1000);
+                setCurrentTasks((currentTasks) => {
+                    return currentTasks.filter((task) => task.id !== draggedTask.id);
+                });
+            }, 100);
         }
     };
 
     const handleDragOver = (event: React.DragEvent) => {
-        if (event.dataTransfer) {
+        if (event.dataTransfer && event.dataTransfer.types[0] === "text/plain") {
             event.preventDefault();
+            if (taskListRef.current) {
+                taskListRef.current.classList.add("border-dashed", "border-2", "border-gray-500");
+            }
         }
     };
 
     const handleOnDrop = (event: React.DragEvent) => {
-        const draggedTask = JSON.parse(event.dataTransfer.getData("draggedTask"));
-        if (draggedTask) {
-            if (!currentTasks.find((task) => task.id === draggedTask.id)) {
-                console.log("dragged - ", draggedTask);
-                updateTaskSchedule(draggedTask.id, listType).then(() => {
-                    setCurrentTasks([...currentTasks, draggedTask]);
-                });
+        const draggedTask = JSON.parse(event.dataTransfer.getData("text/plain")) as Task;
+        console.log("dragged - ", draggedTask);
+        updateTaskSchedule(draggedTask.id, listType).then((updatedTask) => {
+            setCurrentTasks([...currentTasks, updatedTask]);
+            if (taskListRef.current) {
+                taskListRef.current.classList.remove("border-dashed", "border-2", "border-gray-500");
             }
+        });
+    };
+
+    const handleDragLeave = () => {
+        if (taskListRef.current) {
+            taskListRef.current.classList.remove("border-dashed", "border-2", "border-gray-500");
         }
     };
 
@@ -68,14 +79,6 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ listType }, ref) => {
         });
     };
 
-    const handleUpdateTask = (task: Task) => {
-        updateTask(task).then((updatedTask) => {
-            if (updatedTask) {
-                setCurrentTasks([...currentTasks, updatedTask]);
-            }
-        });
-    };
-
     useEffect(() => {
         const fetchTasks = async () => {
             const result = await getAllTasksOfType(listType);
@@ -89,12 +92,16 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ listType }, ref) => {
         handleAddNewTask: handleAddNewTask,
     }));
 
-    useEffect(() => {
-        // Task List Changed
-    }, [currentTasks]);
+    useEffect(() => {}, [currentTasks]);
 
     return (
-        <div className="h-[95%] w-full rounded-lg p-4" onDragOver={handleDragOver} onDrop={handleOnDrop}>
+        <div
+            ref={taskListRef}
+            className={`h-full w-full p-2 ${getBgColor(listType)}`}
+            onDragOver={(e) => handleDragOver(e)}
+            onDrop={(e) => handleOnDrop(e)}
+            onDragLeave={handleDragLeave}
+        >
             {!isLoading ? (
                 currentTasks && currentTasks.length !== 0 ? (
                     <ScrollArea className="w-full h-full flex items-center justify-center">
@@ -110,7 +117,6 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ listType }, ref) => {
                                             <TaskComponent
                                                 task={task}
                                                 handleDeleteTask={() => handleDeleteTask(task.id)}
-                                                handleUpdateTask={async () => handleUpdateTask(task)}
                                             ></TaskComponent>
                                         </Reorder.Item>
                                     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 
 // Styling
 import { twMerge } from "tailwind-merge";
@@ -13,21 +13,20 @@ import { ScheduleTypes, Task } from "@prisma/client";
 interface TaskProps {
     task: Task;
     handleDeleteTask: (taskId: string) => void;
-    handleUpdateTask: (task: Task) => Promise<void>;
 }
 
-export const TaskComponent: React.FC<TaskProps> = ({ task, handleDeleteTask, handleUpdateTask }) => {
-    const [editTask, setEditTask] = useState(false);
+export const TaskComponent: React.FC<TaskProps> = ({ task, handleDeleteTask }) => {
+    const [taskView, setTaskView] = useState<"display" | "edit">("display");
     const [taskItemValue, setTaskItemValue] = useState(task);
 
-    const toggleEdit = (newValue: boolean, currentTaskValue: Task) => {
-        setEditTask(newValue);
-        setTaskItemValue(currentTaskValue);
+    const toggleEdit = (newViewValue: "display" | "edit", currentTaskItemValue: Task) => {
+        setTaskView(newViewValue);
+        setTaskItemValue(currentTaskItemValue);
     };
 
     const getBgColor = (type: ScheduleTypes) => {
         if (taskItemValue.headline !== "") {
-            if (!editTask) {
+            if (taskView === "display") {
                 switch (type) {
                     case "Today":
                         return "bg-red-300";
@@ -41,6 +40,12 @@ export const TaskComponent: React.FC<TaskProps> = ({ task, handleDeleteTask, han
         return "bg-green-300";
     };
 
+    useEffect(() => {
+        if (taskItemValue.headline === "") {
+            setTaskView("edit");
+        }
+    }, [taskItemValue]);
+
     return (
         <div
             className={twMerge(
@@ -48,28 +53,19 @@ export const TaskComponent: React.FC<TaskProps> = ({ task, handleDeleteTask, han
                 `${getBgColor(taskItemValue.schedule)}`
             )}
         >
-            {taskItemValue.headline !== "" ? (
-                editTask ? (
-                    <EditTask
-                        toggleEdit={toggleEdit}
-                        taskItem={taskItemValue}
-                        handleDeleteTask={handleDeleteTask}
-                        handleUpdateTask={handleUpdateTask}
-                    ></EditTask>
-                ) : (
-                    <DisplayTask
-                        toggleEdit={toggleEdit}
-                        taskItem={taskItemValue}
-                        handleDeleteTask={handleDeleteTask}
-                    ></DisplayTask>
-                )
-            ) : (
+            {" "}
+            {taskView == "edit" ? (
                 <EditTask
                     toggleEdit={toggleEdit}
                     taskItem={taskItemValue}
                     handleDeleteTask={handleDeleteTask}
-                    handleUpdateTask={handleUpdateTask}
                 ></EditTask>
+            ) : (
+                <DisplayTask
+                    toggleEdit={toggleEdit}
+                    taskItem={taskItemValue}
+                    handleDeleteTask={handleDeleteTask}
+                ></DisplayTask>
             )}
         </div>
     );

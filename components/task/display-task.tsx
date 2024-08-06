@@ -8,17 +8,14 @@ import { Button } from "../ui/button";
 import { Task } from "@prisma/client";
 
 interface DisplayTaskProps {
-    toggleEdit: (value: boolean, currentTaskValue: Task) => void;
+    toggleEdit: (newViewValue: "display" | "edit", currentTaskValue: Task) => void;
     handleDeleteTask: (taskId: string) => void;
     taskItem: Task;
 }
 
 export const DisplayTask: React.FC<DisplayTaskProps> = ({ toggleEdit, handleDeleteTask, taskItem }) => {
-    const [isHidden, setIsHidden] = useState(false);
-
     const onEditClicked = () => {
-        setIsHidden(!isHidden);
-        toggleEdit(!isHidden, taskItem); // Setting isEdit(Parent) opposite of if the Display task is showing
+        toggleEdit("edit", taskItem);
     };
 
     const onDeleteClicked = (id: string) => {
@@ -26,24 +23,26 @@ export const DisplayTask: React.FC<DisplayTaskProps> = ({ toggleEdit, handleDele
     };
 
     return (
-        <div className="w-full h-full rounded-lg drop-shadow-lg flex flex-col" hidden={isHidden}>
+        <div className="w-full h-full rounded-lg drop-shadow-lg flex flex-col">
             <div className="flex flex-col gap-y-4">
                 <div className="flex">
-                    <div className="font-semibold text-neutral-600 flex items-center overflow-hidden">
+                    <div className="font-semibold flex items-center overflow-hidden">
                         <span className="text-nowrap overflow-hidden text-ellipsis mr-4">{taskItem.headline}</span>
                     </div>
                     <div className="ml-auto flex gap-x-2">
-                        <Button onClick={onEditClicked} className="rounded-full">
+                        <Button onClick={onEditClicked} className="bg-white text-black">
                             <FaPencilAlt size={15}></FaPencilAlt>
                         </Button>
-                        <Button onClick={() => onDeleteClicked(taskItem.id)} className="rounded-full">
+                        <Button onClick={() => onDeleteClicked(taskItem.id)} className=" bg-white text-black">
                             <FaTrashAlt size={15}></FaTrashAlt>
                         </Button>
                     </div>
                 </div>
-                <div className="text-lg h-full block overflow-hidden text-ellipsis">
-                    <p className="">{taskItem.description}</p>
-                </div>
+                {taskItem.description !== "" && (
+                    <div className="text-lg h-full block overflow-hidden text-ellipsis">
+                        <p className="">{taskItem.description}</p>
+                    </div>
+                )}
             </div>
         </div>
     );

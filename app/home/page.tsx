@@ -1,12 +1,13 @@
-import { ScheduledTaskContainers } from "@/components/container/scheduled-task-containers-props";
-import { ScheduleTypes, Task } from "@prisma/client";
+import { NavBar } from "@/components/commons/navbar";
+import { ScheduledTaskContainers } from "@/components/container/scheduled-task-containers";
 
 // const expTaskItems: TaskItem[] = [];
 
 const HomePage = () => {
     return (
         <div className="w-full h-full overflow-hidden">
-            <ScheduledTaskContainers></ScheduledTaskContainers>
+            <NavBar className="w-full h-[60px]"></NavBar>
+            <ScheduledTaskContainers className="w-full h-[calc(100vh-60px)]"></ScheduledTaskContainers>
         </div>
     );
 };

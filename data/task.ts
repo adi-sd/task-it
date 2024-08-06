@@ -70,6 +70,7 @@ export const updateTask = async (values: z.infer<typeof TaskUpdateSchema>) => {
                 ...values,
             },
         });
+        console.log("Task Update Done ", updatedTask);
         return updatedTask;
     } catch (error) {
         console.error(error);

@@ -14,16 +14,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { TaskUpdateSchema } from "@/schemas";
 import { Button } from "../ui/button";
 import { ScheduleTypes, Task } from "@prisma/client";
+import { updateTask } from "@/data/task";
 
 interface EditTaskProps {
-    toggleEdit: (value: boolean, currentTaskValue: Task) => void;
+    toggleEdit: (newViewValue: "display" | "edit", currentTaskItemValue: Task) => void;
     handleDeleteTask: (taskId: string) => void;
-    handleUpdateTask: (task: Task) => Promise<void>;
     taskItem: Task;
 }
 
-export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, handleDeleteTask, handleUpdateTask, taskItem }) => {
-    const [isHidden, setIsHidden] = useState(false);
+export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, handleDeleteTask, taskItem }) => {
     const [isPending, startTransition] = useTransition();
 
     const form = useForm<z.infer<typeof TaskUpdateSchema>>({
@@ -39,10 +38,10 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, handleDeleteTask
 
     const onSubmit = (values: z.infer<typeof TaskUpdateSchema>) => {
         startTransition(() => {
-            handleUpdateTask(values as Task).then(() => {
-                setIsHidden(!isHidden); // Setting isEdit(Parent) to exact value of if Edit Task is showing
-                toggleEdit(isHidden, values as Task);
-                // Call a server action to update the task in db
+            updateTask(values as Task).then((updatedTask) => {
+                if (updatedTask) {
+                    toggleEdit("display", updatedTask);
+                }
             });
         });
     };
@@ -52,7 +51,7 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, handleDeleteTask
     };
 
     return (
-        <div className="w-full h-full rounded-lg drop-shadow-lg flex flex-col" hidden={isHidden}>
+        <div className="w-full h-full rounded-lg drop-shadow-lg flex flex-col">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <div className="space-y-4">
@@ -75,10 +74,10 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, handleDeleteTask
                                 )}
                             ></FormField>
                             <div className="ml-auto flex gap-x-2">
-                                <Button type="submit" className="w-fit ml-auto" disabled={isPending}>
+                                <Button type="submit" className="bg-white text-black" disabled={isPending}>
                                     <FaCheck></FaCheck>
                                 </Button>
-                                <Button onClick={() => onDeleteClicked(taskItem.id)} className="rounded-full">
+                                <Button onClick={() => onDeleteClicked(taskItem.id)} className="bg-white text-black">
                                     <FaTrashAlt size={15}></FaTrashAlt>
                                 </Button>
                             </div>
