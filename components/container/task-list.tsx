@@ -8,11 +8,11 @@ import { addNewTask, deleteTaskById, getAllTasksOfType, updateTask, updateTaskSc
 import { Task, ScheduleTypes } from "@prisma/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { BeatLoader } from "react-spinners";
-import { twJoin, twMerge } from "tailwind-merge";
+import { twMerge } from "tailwind-merge";
 import { getBgColor, getSignatureColor, getTextColor } from "@/lib/utils";
-import { get } from "http";
 
 interface TaskListProps {
+    className?: string;
     listType: ScheduleTypes;
 }
 
@@ -22,7 +22,7 @@ export interface TaskListRef {
 
 export const revalidate = 0;
 
-const TaskList = forwardRef<TaskListRef, TaskListProps>(({ listType }, ref) => {
+const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }, ref) => {
     const taskListRef = useRef<HTMLDivElement>(null);
     const [currentTasks, setCurrentTasks] = useState<Task[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -96,11 +96,11 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ listType }, ref) => {
 
     return (
         <div
-            ref={taskListRef}
-            className={`h-full w-full p-2 ${getBgColor(listType)}`}
+            className={twMerge("h-full w-full p-2", className)}
             onDragOver={(e) => handleDragOver(e)}
             onDrop={(e) => handleOnDrop(e)}
             onDragLeave={handleDragLeave}
+            ref={taskListRef}
         >
             {!isLoading ? (
                 currentTasks && currentTasks.length !== 0 ? (

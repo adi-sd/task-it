@@ -43,9 +43,15 @@ export const TaskContainer: React.FC<TaskContainerProps> = ({ type, className })
         <Collapsible
             open={isListVisible}
             onOpenChange={setIsListVisible}
-            className={twMerge("rounded-lg overflow-hidden", className)}
+            className={twMerge("w-full h-full", className)}
         >
-            <div className={twMerge("h-[60px] w-full flex items-center", getHeaderBgColor(type))}>
+            <div
+                className={twMerge(
+                    "h-[60px] w-full flex items-center",
+                    getHeaderBgColor(type),
+                    `${isListVisible ? "rounded-t-lg" : "rounded-lg"}`
+                )}
+            >
                 <div className="h-full w-full flex items-center px-4">
                     <div className="flex items-center justify-center text-middle mr-auto">
                         <FaClipboardList
@@ -97,7 +103,7 @@ export const TaskContainer: React.FC<TaskContainerProps> = ({ type, className })
                     </div>
                 </div>
             </div>
-            <CollapsibleContent className={twMerge("h-full w-full")}>
+            <CollapsibleContent className={twMerge("h-[calc(100%-60px)] rounded-b-lg w-full", getBgColor(type))}>
                 <TaskList listType={type} ref={taskListRef}></TaskList>
             </CollapsibleContent>
         </Collapsible>
