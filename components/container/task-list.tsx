@@ -70,6 +70,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
     const handleAddNewTask = async () => {
         let newTask = EmptyTaskTemplate;
         newTask.schedule = listType;
+        newTask.userId = user?.id;
         const newDbTask = await addNewTask(newTask as Task);
         setCurrentTasks([...currentTasks, newDbTask]);
     };
@@ -83,7 +84,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
 
     useEffect(() => {
         const fetchTasks = async () => {
-            const result = await getAllTasksOfType(listType);
+            const result = await getAllTasksOfType(listType, user?.id!);
             console.log(result);
             setCurrentTasks(result);
         };

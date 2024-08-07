@@ -1,3 +1,5 @@
+"use client";
+
 import { useRef, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { FaClipboardList } from "react-icons/fa";

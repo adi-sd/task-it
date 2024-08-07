@@ -1,5 +1,3 @@
-"use client";
-
 import { twMerge } from "tailwind-merge";
 import { TaskContainer } from "./task-container";
 import { ScheduleTypes } from "@prisma/client";

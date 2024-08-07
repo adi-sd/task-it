@@ -16,11 +16,12 @@ export const getAllTasks = async () => {
     }
 };
 
-export const getAllTasksOfType = async (type: ScheduleTypes) => {
+export const getAllTasksOfType = async (type: ScheduleTypes, userId: string) => {
     try {
         const tasks = await db.task.findMany({
             where: {
                 schedule: type,
+                userId: userId,
             },
         });
         return tasks;

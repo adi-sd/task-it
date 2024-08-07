@@ -3,6 +3,7 @@ import { z } from "zod";
 
 export const TaskUpdateSchema = z.object({
     id: z.optional(z.string()),
+    userId: z.optional(z.string()),
     headline: z.string().max(100).min(1, {
         message: "Headline is required!",
     }),
