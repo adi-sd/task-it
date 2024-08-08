@@ -12,7 +12,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Button } from "@/components/ui/button";
 import { TaskList, TaskListRef } from "./task-list";
 import { ScheduleTypes } from "@prisma/client";
-import { getBgColor, getHeaderBgColor, getTextColor } from "@/lib/utils";
+import { getListBgColor, getListHeaderBgColor, getListTextColor } from "@/lib/utils";
 
 export interface TaskContainerProps {
     type: ScheduleTypes;
@@ -50,7 +50,7 @@ export const TaskContainer: React.FC<TaskContainerProps> = ({ type, className })
             <div
                 className={twMerge(
                     "h-[60px] w-full flex items-center",
-                    getHeaderBgColor(type),
+                    getListHeaderBgColor(type),
                     `${isListVisible ? "rounded-t-lg" : "rounded-lg"}`
                 )}
             >
@@ -59,11 +59,11 @@ export const TaskContainer: React.FC<TaskContainerProps> = ({ type, className })
                         <FaClipboardList
                             size={25}
                             className={twMerge(
-                                "mr-[5px] mt-[-3px] ml-[-3px] text-white shadow-sm",
-                                `hover:${getTextColor(type)}`
+                                "mr-[7px] mt-[-3px] ml-[-3px] text-white shadow-sm",
+                                `hover:${getListTextColor(type)}`
                             )}
                         ></FaClipboardList>
-                        <span className={twMerge("font-bold text-xl", getTextColor(type))}>{type}</span>
+                        <span className={twMerge("font-bold text-2xl font-mono", getListTextColor(type))}>{type}</span>
                     </div>
                     <div className="flex gap-x-2">
                         <TooltipProvider>
@@ -105,7 +105,12 @@ export const TaskContainer: React.FC<TaskContainerProps> = ({ type, className })
                     </div>
                 </div>
             </div>
-            <CollapsibleContent className={twMerge("h-[calc(100%-60px)] rounded-b-lg w-full", getBgColor(type))}>
+            <CollapsibleContent
+                className={twMerge(
+                    "w-full h-[calc(100%-60px)] rounded-b-lg overflow-y-auto scroll-smooth no-scrollbar",
+                    getListBgColor(type)
+                )}
+            >
                 <TaskList listType={type} ref={taskListRef}></TaskList>
             </CollapsibleContent>
         </Collapsible>

@@ -6,7 +6,7 @@ import "./globals.css";
 import { auth } from "@/auth/auth";
 import { Toaster } from "@/components/ui/sonner";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600", "700"] });
 
 export const metadata: Metadata = {
     title: "task-it",

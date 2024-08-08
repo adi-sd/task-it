@@ -15,6 +15,7 @@ import { TaskUpdateSchema } from "@/schemas";
 import { Button } from "../ui/button";
 import { ScheduleTypes, Task } from "@prisma/client";
 import { updateTask } from "@/data/task";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 interface EditTaskProps {
     toggleEdit: (newViewValue: "display" | "edit", currentTaskItemValue: Task) => void;
@@ -23,6 +24,7 @@ interface EditTaskProps {
 }
 
 export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, handleDeleteTask, taskItem }) => {
+    const user = useCurrentUser();
     const [isPending, startTransition] = useTransition();
 
     const form = useForm<z.infer<typeof TaskUpdateSchema>>({
@@ -38,7 +40,7 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, handleDeleteTask
 
     const onSubmit = (values: z.infer<typeof TaskUpdateSchema>) => {
         startTransition(() => {
-            updateTask(values as Task).then((updatedTask) => {
+            updateTask(values as Task, user?.id!).then((updatedTask) => {
                 if (updatedTask) {
                     toggleEdit("display", updatedTask);
                 }
@@ -54,30 +56,33 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, handleDeleteTask
         <div className="w-full h-full rounded-lg drop-shadow-lg flex flex-col">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
-                    <div className="space-y-4">
+                    <div className="space-y-4 my-2 mx-[-5px]">
                         <div className="flex">
                             <FormField
                                 control={form.control}
                                 name="headline"
                                 render={({ field }) => (
-                                    <FormItem>
+                                    <FormItem className="w-full mr-3">
                                         <FormControl>
                                             <Input
                                                 {...field}
                                                 type="headline"
                                                 disabled={isPending}
                                                 placeholder="Task Headline..."
-                                                className="font-semibold text-nowrap text-md  text-neutral-600"
+                                                className="font-semibold text-nowrap text-neutral-600"
                                             ></Input>
                                         </FormControl>
                                     </FormItem>
                                 )}
                             ></FormField>
                             <div className="ml-auto flex gap-x-2">
-                                <Button type="submit" className="bg-white text-black" disabled={isPending}>
+                                <Button type="submit" className="bg-white text-black p-3" disabled={isPending}>
                                     <FaCheck></FaCheck>
                                 </Button>
-                                <Button onClick={() => onDeleteClicked(taskItem.id)} className="bg-white text-black">
+                                <Button
+                                    onClick={() => onDeleteClicked(taskItem.id)}
+                                    className="bg-white text-black p-3"
+                                >
                                     <FaTrashAlt size={15}></FaTrashAlt>
                                 </Button>
                             </div>

@@ -1,14 +1,15 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useRef, useState, MouseEvent } from "react";
 
 // Styling
 import { twMerge } from "tailwind-merge";
 
 // Components
-import { DisplayTask } from "./display-task";
+import { DisplayTask, DisplayTaskRef } from "./display-task";
 import { EditTask } from "./edit-task";
 import { ScheduleTypes, Task } from "@prisma/client";
+import { getTaskBgColor, getTaskBorderColor } from "@/lib/utils";
 
 interface TaskProps {
     task: Task;
@@ -19,25 +20,18 @@ export const TaskComponent: React.FC<TaskProps> = ({ task, handleDeleteTask }) =
     const [taskView, setTaskView] = useState<"display" | "edit">("display");
     const [taskItemValue, setTaskItemValue] = useState(task);
 
+    const displayTaskRef = useRef<DisplayTaskRef>(null);
+
     const toggleEdit = (newViewValue: "display" | "edit", currentTaskItemValue: Task) => {
         setTaskView(newViewValue);
         setTaskItemValue(currentTaskItemValue);
     };
 
-    const getBgColor = (type: ScheduleTypes) => {
-        if (taskItemValue.headline !== "") {
-            if (taskView === "display") {
-                switch (type) {
-                    case "Today":
-                        return "bg-red-300";
-                    case "Tomorrow":
-                        return "bg-orange-300";
-                    case "ThisWeek":
-                        return "bg-sky-300";
-                }
-            }
+    const handleToggleDisplayMinimize = (event: MouseEvent<HTMLDivElement>) => {
+        event.stopPropagation();
+        if (displayTaskRef.current) {
+            displayTaskRef.current.toggleDisplayMinimize();
         }
-        return "bg-green-300";
     };
 
     useEffect(() => {
@@ -49,9 +43,11 @@ export const TaskComponent: React.FC<TaskProps> = ({ task, handleDeleteTask }) =
     return (
         <div
             className={twMerge(
-                "w-full h-fit p-4 flex flex-col gap-y-4 rounded-xl shadow-md transition-all",
-                `${getBgColor(taskItemValue.schedule)}`
+                "w-full h-fit px-4 py-2 flex flex-col gap-y-4 rounded-xl shadow-md transition-all",
+                `${getTaskBgColor(taskItemValue.schedule)}`,
+                `${getTaskBorderColor(taskItemValue.schedule, taskView)}`
             )}
+            onClick={handleToggleDisplayMinimize}
         >
             {" "}
             {taskView == "edit" ? (
@@ -65,6 +61,7 @@ export const TaskComponent: React.FC<TaskProps> = ({ task, handleDeleteTask }) =
                     toggleEdit={toggleEdit}
                     taskItem={taskItemValue}
                     handleDeleteTask={handleDeleteTask}
+                    ref={displayTaskRef}
                 ></DisplayTask>
             )}
         </div>

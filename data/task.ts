@@ -5,10 +5,15 @@ import z from "zod";
 import { db } from "@/lib/db";
 import { TaskUpdateSchema } from "@/schemas";
 import { ScheduleTypes, Task } from "@prisma/client";
+import { use } from "react";
 
-export const getAllTasks = async () => {
+export const getAllTasks = async (userId: string) => {
     try {
-        const tasks = await db.task.findMany();
+        const tasks = await db.task.findMany({
+            where: {
+                userId: userId,
+            },
+        });
         return tasks;
     } catch (error) {
         console.error(error);
@@ -31,11 +36,12 @@ export const getAllTasksOfType = async (type: ScheduleTypes, userId: string) => 
     }
 };
 
-export const getTaskById = async (taskId: string) => {
+export const getTaskById = async (taskId: string, userId: string) => {
     try {
         const task = await db.task.findUnique({
             where: {
                 id: taskId,
+                userId: userId,
             },
         });
         return task;
@@ -45,9 +51,9 @@ export const getTaskById = async (taskId: string) => {
     }
 };
 
-export const addNewTask = async (task: Task) => {
+export const addNewTask = async (task: Task, userId: string) => {
     try {
-        const newTask = await db.task.create({ data: task });
+        const newTask = await db.task.create({ data: { ...task, userId: userId } });
         return newTask;
     } catch (error) {
         console.error(error);
@@ -55,15 +61,16 @@ export const addNewTask = async (task: Task) => {
     }
 };
 
-export const updateTask = async (values: z.infer<typeof TaskUpdateSchema>) => {
+export const updateTask = async (values: z.infer<typeof TaskUpdateSchema>, userId: string) => {
     try {
         const existingTask = await db.task.findUnique({
             where: {
                 id: values.id,
+                userId: userId,
             },
         });
         if (!existingTask) {
-            throw new Error("Task Not Found with given ID");
+            throw new Error("Task Not Found with given ID or User ID");
         }
         const updatedTask = await db.task.update({
             where: { id: existingTask.id },
@@ -71,7 +78,7 @@ export const updateTask = async (values: z.infer<typeof TaskUpdateSchema>) => {
                 ...values,
             },
         });
-        console.log("Task Update Done ", updatedTask);
+        console.log("Task Update Done - ", updatedTask);
         return updatedTask;
     } catch (error) {
         console.error(error);
@@ -79,11 +86,12 @@ export const updateTask = async (values: z.infer<typeof TaskUpdateSchema>) => {
     }
 };
 
-export const deleteTaskById = async (id: string) => {
+export const deleteTaskById = async (id: string, userId: string) => {
     try {
         const tasks = await db.task.delete({
             where: {
                 id,
+                userId,
             },
         });
         return tasks;
@@ -93,11 +101,12 @@ export const deleteTaskById = async (id: string) => {
     }
 };
 
-export const updateTaskSchedule = async (taskId: string, type: ScheduleTypes) => {
+export const updateTaskSchedule = async (taskId: string, userId: string, type: ScheduleTypes) => {
     try {
         const existingTask = await db.task.findUnique({
             where: {
                 id: taskId,
+                userId: userId,
             },
         });
         if (!existingTask) {
