@@ -7,6 +7,7 @@ import { FaTrashAlt } from "react-icons/fa";
 import { Button } from "../ui/button";
 import { Task } from "@prisma/client";
 import { twMerge } from "tailwind-merge";
+import { getTaskShadowColor } from "@/lib/utils";
 
 interface DisplayTaskProps {
     toggleEdit: (newViewValue: "display" | "edit", currentTaskValue: Task) => void;
@@ -38,7 +39,7 @@ const DisplayTask = forwardRef<DisplayTaskRef, DisplayTaskProps>(({ toggleEdit, 
     return (
         <div className="w-full h-full rounded-lg drop-shadow-sm flex flex-col">
             <div className={twMerge("flex flex-col gap-y-4 mt-1 mb-2")}>
-                <div className={twMerge("flex", `${isMinimized && "border-b-4 border-b-white/50 pb-4"}`)}>
+                <div className="px-4 flex">
                     <div className="font-semibold flex items-center overflow-hidden">
                         <span className="text-nowrap overflow-hidden text-ellipsis mr-4">{taskItem.headline}</span>
                     </div>
@@ -51,16 +52,19 @@ const DisplayTask = forwardRef<DisplayTaskRef, DisplayTaskProps>(({ toggleEdit, 
                         </Button>
                     </div>
                 </div>
-                {isMinimized &&
-                    (taskItem.description !== "" ? (
-                        <div className="h-full w-full overflow-hidden text-ellipsis flex flex-col gap-y-2">
-                            <p className="">{taskItem.description}</p>
-                        </div>
-                    ) : (
-                        <div className="h-full block overflow-hidden text-ellipsis">
-                            <p className="text-slate-500">No Description for the Task!</p>
-                        </div>
-                    ))}
+                {isMinimized && (
+                    <div className={twMerge(getTaskShadowColor(taskItem.schedule, "display"))}>
+                        {taskItem.description !== "" ? (
+                            <div className="h-full w-full overflow-hidden text-ellipsis flex flex-col gap-y-2 p-4">
+                                <p className="">{taskItem.description}</p>
+                            </div>
+                        ) : (
+                            <div className="h-full block overflow-hidden text-ellipsis p-4">
+                                <p className="text-slate-500">No Description for the Task!</p>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { FaClipboardList } from "react-icons/fa";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
@@ -14,12 +14,16 @@ import { TaskList, TaskListRef } from "./task-list";
 import { ScheduleTypes } from "@prisma/client";
 import { getListBgColor, getListHeaderBgColor, getListTextColor } from "@/lib/utils";
 
-export interface TaskContainerProps {
+export interface TaskContainerRef {
+    isListVisible: boolean;
+}
+
+interface TaskContainerProps {
     type: ScheduleTypes;
     className?: string;
 }
 
-export const TaskContainer: React.FC<TaskContainerProps> = ({ type, className }) => {
+const TaskContainer = forwardRef<TaskContainerRef, TaskContainerProps>(({ type, className }, ref) => {
     const taskListRef = useRef<TaskListRef>(null);
 
     const [isListVisible, setIsListVisible] = useState(true);
@@ -34,19 +38,12 @@ export const TaskContainer: React.FC<TaskContainerProps> = ({ type, className })
         setIsListVisible(!isListVisible);
     };
 
-    const changeClassName = () => {
-        const classNameArray = className?.split(" ");
-        if (!isListVisible) {
-            return classNameArray?.filter((item) => item !== "h-[50%]");
-        }
-    };
+    useImperativeHandle(ref, () => ({
+        isListVisible,
+    }));
 
     return (
-        <Collapsible
-            open={isListVisible}
-            onOpenChange={setIsListVisible}
-            className={twMerge("w-full h-full", className)}
-        >
+        <div className={twMerge("w-full transition-all", isListVisible ? "h-[50%]" : "h-fit", className)}>
             <div
                 className={twMerge(
                     "h-[60px] w-full flex items-center",
@@ -81,38 +78,42 @@ export const TaskContainer: React.FC<TaskContainerProps> = ({ type, className })
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
-                        <CollapsibleTrigger asChild>
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            className="bg-white text-black p-2 hover:scale-105"
-                                            onClick={handleCollapseList}
-                                        >
-                                            {isListVisible ? (
-                                                <IoIosArrowUp size={20}></IoIosArrowUp>
-                                            ) : (
-                                                <IoIosArrowDown size={20}></IoIosArrowDown>
-                                            )}
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>Collapse List</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                        </CollapsibleTrigger>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        className="bg-white text-black p-2 hover:scale-105"
+                                        onClick={handleCollapseList}
+                                    >
+                                        {isListVisible ? (
+                                            <IoIosArrowUp size={20}></IoIosArrowUp>
+                                        ) : (
+                                            <IoIosArrowDown size={20}></IoIosArrowDown>
+                                        )}
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Collapse List</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                     </div>
                 </div>
             </div>
-            <CollapsibleContent
-                className={twMerge(
-                    "w-full h-[calc(100%-60px)] rounded-b-lg overflow-y-auto scroll-smooth no-scrollbar",
-                    getListBgColor(type)
-                )}
-            >
-                <TaskList listType={type} ref={taskListRef}></TaskList>
-            </CollapsibleContent>
-        </Collapsible>
+            {isListVisible && (
+                <div
+                    className={twMerge(
+                        "w-full h-[calc(100%-60px)] rounded-b-lg overflow-y-auto scroll-smooth no-scrollbar",
+                        getListBgColor(type)
+                    )}
+                >
+                    <TaskList listType={type} ref={taskListRef}></TaskList>
+                </div>
+            )}
+        </div>
     );
-};
+});
+
+TaskContainer.displayName = "TaskContainer";
+
+export { TaskContainer };

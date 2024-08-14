@@ -43,7 +43,7 @@ export const TaskComponent: React.FC<TaskProps> = ({ task, handleDeleteTask }) =
     return (
         <div
             className={twMerge(
-                "w-full h-fit px-4 py-2 flex flex-col gap-y-4 rounded-xl shadow-md transition-all",
+                "w-full h-fit py-2 flex flex-col gap-y-4 rounded-xl shadow-md transition-all",
                 `${getTaskBgColor(taskItemValue.schedule)}`,
                 `${getTaskBorderColor(taskItemValue.schedule, taskView)}`
             )}

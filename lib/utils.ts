@@ -83,3 +83,17 @@ export const getTaskBorderColor = (type: ScheduleTypes, taskView: "edit" | "disp
     }
     return "";
 };
+
+export const getTaskShadowColor = (type: ScheduleTypes, taskView: "edit" | "display") => {
+    if (taskView == "display") {
+        switch (type) {
+            case "Today":
+                return "my-inner-shadow-red";
+            case "Tomorrow":
+                return "my-inner-shadow-orange";
+            case "ThisWeek":
+                return "my-inner-shadow-blue";
+        }
+    }
+    return "";
+};
