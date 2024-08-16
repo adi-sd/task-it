@@ -100,7 +100,7 @@ export const deleteTaskByIdDB = async (id: string, userId: string) => {
     }
 };
 
-export const updateTaskScheduleDB = async (taskId: string, userId: string, scheduleType: TaskListTypes) => {
+export const updateTaskScheduleDB = async (taskId: string, userId: string, listType: TaskListTypes) => {
     try {
         const existingTask = await db.task.findUnique({
             where: {
@@ -111,11 +111,27 @@ export const updateTaskScheduleDB = async (taskId: string, userId: string, sched
         if (!existingTask) {
             throw new Error("Task Not Found with given ID");
         }
+
+        let updatedData: {
+            currentListType: TaskListTypes;
+            isCompleted: boolean;
+            isDeleted: boolean;
+        } = {
+            currentListType: listType,
+            isCompleted: false,
+            isDeleted: false,
+        };
+        if (listType === TaskListTypes.Completed) {
+            updatedData.isCompleted = true;
+            updatedData.isDeleted = false;
+        } else if (listType === TaskListTypes.Deleted) {
+            updatedData.isCompleted = false;
+            updatedData.isDeleted = true;
+        }
+
         const updatedTask = await db.task.update({
             where: { id: existingTask.id },
-            data: {
-                currentListType: scheduleType,
-            },
+            data: updatedData,
         });
         return updatedTask;
     } catch (error) {

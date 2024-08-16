@@ -27,6 +27,7 @@ model Task {
     headline            String
     description         String
     isCompleted         Boolean           @default(false)
+    isDeleted           Boolean           @default(false)
     createdAt           DateTime?         @default(now())
     lastModifiedAt      DateTime?         @default(now())
     currentListType     TaskListTypes
