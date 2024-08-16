@@ -4,7 +4,7 @@ import * as z from "zod";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 import { LoginSchema } from "@/schemas";
@@ -19,7 +19,11 @@ import { CardWrapper } from "@/components/commons/card-wrapper";
 import { FormError } from "@/components/messages/form-error";
 import { FormSuccess } from "@/components/messages/form-success";
 
-const LoginForm = () => {
+interface LoginFormProps {
+    handleSwitchToRegister?: () => void;
+}
+
+const LoginForm: React.FC<LoginFormProps> = ({ handleSwitchToRegister }) => {
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get("callbackUrl") || "";
     const urlError =
@@ -63,6 +67,7 @@ const LoginForm = () => {
             headerLabel="Welcome Back!"
             backButtonLabel="Don't have an account?"
             backButtonHref="/auth/register"
+            backButtonOnclick={handleSwitchToRegister}
             showSocial
         >
             <Form {...form}>

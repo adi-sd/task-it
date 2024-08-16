@@ -4,7 +4,6 @@ import { User } from "next-auth";
 import { FaUserCircle } from "react-icons/fa";
 import { IoMdExit } from "react-icons/io";
 
-import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/commons/logo";
 import LogoutButton from "@/components/auth/logout-button";
 import {
@@ -26,7 +25,7 @@ export const NavBar: React.FC<NavBarProps> = ({ className, currentUser }) => {
     return (
         <div className={twMerge("bg-indigo-300 font-mono", className)}>
             <div className="w-full h-full flex items-center justify-between">
-                <Logo enableLink></Logo>
+                <Logo enableLink enableIcon></Logo>
                 <div className="h-full w-fit flex items-center justify-center gap-x-4 mx-6 p-2 hover:bg-white/50">
                     {currentUser && (
                         <>

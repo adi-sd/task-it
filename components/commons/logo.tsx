@@ -5,9 +5,10 @@ import { twMerge } from "tailwind-merge";
 interface LogoProps {
     className?: string;
     enableLink?: boolean;
+    enableIcon?: boolean;
 }
 
-export const Logo: React.FC<LogoProps> = ({ className, enableLink }) => {
+export const Logo: React.FC<LogoProps> = ({ className, enableLink, enableIcon = false }) => {
     const user = useCurrentUser();
     const router = useRouter();
 
@@ -29,7 +30,7 @@ export const Logo: React.FC<LogoProps> = ({ className, enableLink }) => {
             )}
             onClick={handleLogoClick}
         >
-            <div className="font-2xl font-bold mr-2">📎</div>
+            {enableIcon && <div className="font-2xl font-bold mr-2">📎</div>}
             task-it
         </div>
     );

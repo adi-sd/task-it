@@ -17,7 +17,11 @@ import { CardWrapper } from "@/components/commons/card-wrapper";
 import { FormError } from "@/components/messages/form-error";
 import { FormSuccess } from "@/components/messages/form-success";
 
-const RegisterForm = () => {
+interface RegisterFormProps {
+    handleSwitchToLogin?: () => void;
+}
+
+const RegisterForm: React.FC<RegisterFormProps> = ({ handleSwitchToLogin }) => {
     const [error, setError] = useState<string>("");
     const [success, setSuccess] = useState<string>("");
     const [isPending, startTransition] = useTransition();
@@ -43,9 +47,10 @@ const RegisterForm = () => {
 
     return (
         <CardWrapper
-            headerLabel="Create an account"
+            headerLabel="Create an account!"
             backButtonLabel="Already have an account?"
             backButtonHref="/auth/login"
+            backButtonOnclick={handleSwitchToLogin}
             showSocial
         >
             <Form {...form}>

@@ -1,5 +1,4 @@
-import { LoginButton } from "@/components/auth/login-button";
-import { RegisterButton } from "@/components/auth/register-button";
+import { AuthDialog } from "@/components/auth/auth-dialog";
 import { NavBar } from "@/components/commons/navbar";
 import { Button } from "@/components/ui/button";
 
@@ -17,18 +16,11 @@ const RootPage = async () => {
                     </div>
                     <div className="flex gap-x-4">
                         <div>
-                            <LoginButton>
+                            <AuthDialog>
                                 <Button variant="default" size="lg" className="text-lg font-semibold">
-                                    Login
+                                    Login / Register
                                 </Button>
-                            </LoginButton>
-                        </div>
-                        <div>
-                            <RegisterButton>
-                                <Button variant="outline" size="lg" className="text-lg font-semibold">
-                                    Register
-                                </Button>
-                            </RegisterButton>
+                            </AuthDialog>
                         </div>
                     </div>
                 </div>
