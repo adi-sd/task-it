@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { ScheduleTypes, Task } from "@prisma/client";
+import { TaskListTypes } from "@prisma/client";
 import { TaskUpdateSchema } from "@/schemas";
 
 export const EmptyTaskTemplate: z.infer<typeof TaskUpdateSchema> = {
     userId: "",
     headline: "",
     description: "",
-    schedule: ScheduleTypes.Today,
+    currentListType: TaskListTypes.Today,
     isCompleted: false,
 };
 
@@ -15,3 +15,5 @@ export type AuthResponseType = {
     success?: string;
     twoFactor?: boolean;
 };
+
+export type TaskViewType = "edit" | "display";

@@ -4,10 +4,9 @@ import z from "zod";
 
 import { db } from "@/lib/db";
 import { TaskUpdateSchema } from "@/schemas";
-import { ScheduleTypes, Task } from "@prisma/client";
-import { use } from "react";
+import { TaskListTypes, Task } from "@prisma/client";
 
-export const getAllTasks = async (userId: string) => {
+export const getAllTasksDB = async (userId: string) => {
     try {
         const tasks = await db.task.findMany({
             where: {
@@ -21,11 +20,11 @@ export const getAllTasks = async (userId: string) => {
     }
 };
 
-export const getAllTasksOfType = async (type: ScheduleTypes, userId: string) => {
+export const getAllTasksOfTypeDB = async (listType: TaskListTypes, userId: string) => {
     try {
         const tasks = await db.task.findMany({
             where: {
-                schedule: type,
+                currentListType: listType,
                 userId: userId,
             },
         });
@@ -36,7 +35,7 @@ export const getAllTasksOfType = async (type: ScheduleTypes, userId: string) => 
     }
 };
 
-export const getTaskById = async (taskId: string, userId: string) => {
+export const getTaskByIdDB = async (taskId: string, userId: string) => {
     try {
         const task = await db.task.findUnique({
             where: {
@@ -51,7 +50,7 @@ export const getTaskById = async (taskId: string, userId: string) => {
     }
 };
 
-export const addNewTask = async (task: Task, userId: string) => {
+export const addNewTaskDB = async (task: Task, userId: string) => {
     try {
         const newTask = await db.task.create({ data: { ...task, userId: userId } });
         return newTask;
@@ -61,7 +60,7 @@ export const addNewTask = async (task: Task, userId: string) => {
     }
 };
 
-export const updateTask = async (values: z.infer<typeof TaskUpdateSchema>, userId: string) => {
+export const updateTaskDB = async (values: z.infer<typeof TaskUpdateSchema>, userId: string) => {
     try {
         const existingTask = await db.task.findUnique({
             where: {
@@ -86,7 +85,7 @@ export const updateTask = async (values: z.infer<typeof TaskUpdateSchema>, userI
     }
 };
 
-export const deleteTaskById = async (id: string, userId: string) => {
+export const deleteTaskByIdDB = async (id: string, userId: string) => {
     try {
         const tasks = await db.task.delete({
             where: {
@@ -101,7 +100,7 @@ export const deleteTaskById = async (id: string, userId: string) => {
     }
 };
 
-export const updateTaskSchedule = async (taskId: string, userId: string, type: ScheduleTypes) => {
+export const updateTaskScheduleDB = async (taskId: string, userId: string, scheduleType: TaskListTypes) => {
     try {
         const existingTask = await db.task.findUnique({
             where: {
@@ -115,7 +114,7 @@ export const updateTaskSchedule = async (taskId: string, userId: string, type: S
         const updatedTask = await db.task.update({
             where: { id: existingTask.id },
             data: {
-                schedule: type,
+                currentListType: scheduleType,
             },
         });
         return updatedTask;

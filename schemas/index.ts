@@ -1,4 +1,4 @@
-import { ScheduleTypes } from "@prisma/client";
+import { TaskListTypes } from "@prisma/client";
 import { z } from "zod";
 
 export const TaskUpdateSchema = z.object({
@@ -10,7 +10,14 @@ export const TaskUpdateSchema = z.object({
     description: z.string().max(300, {
         message: "Maximum character limit (300) reached!",
     }),
-    schedule: z.enum([ScheduleTypes.Today, ScheduleTypes.ThisWeek, ScheduleTypes.Tomorrow]),
+    schedule: z.optional(z.enum([TaskListTypes.Today, TaskListTypes.ThisWeek, TaskListTypes.Tomorrow])),
+    currentListType: z.enum([
+        TaskListTypes.Today,
+        TaskListTypes.ThisWeek,
+        TaskListTypes.Tomorrow,
+        TaskListTypes.Completed,
+        TaskListTypes.Deleted,
+    ]),
     isCompleted: z.optional(z.boolean()),
 });
 

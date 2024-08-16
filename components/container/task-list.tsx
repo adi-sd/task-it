@@ -1,11 +1,11 @@
 // Motion
 import { Reorder } from "framer-motion";
-import { forwardRef, use, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 
 import { EmptyTaskTemplate } from "@/types/types";
 import { TaskComponent } from "@/components/task/task-component";
-import { addNewTask, deleteTaskById, getAllTasksOfType, updateTask, updateTaskSchedule } from "@/data/task";
-import { Task, ScheduleTypes } from "@prisma/client";
+import { addNewTaskDB, deleteTaskByIdDB, getAllTasksOfTypeDB, updateTaskDB, updateTaskScheduleDB } from "@/data/task";
+import { Task, TaskListTypes } from "@prisma/client";
 import { BeatLoader } from "react-spinners";
 import { twMerge } from "tailwind-merge";
 import { getSignatureColor, getListTextColor } from "@/lib/utils";
@@ -13,7 +13,7 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 
 interface TaskListProps {
     className?: string;
-    listType: ScheduleTypes;
+    listType: TaskListTypes;
 }
 
 export interface TaskListRef {
@@ -52,7 +52,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
     const handleOnDrop = (event: React.DragEvent) => {
         const draggedTask = JSON.parse(event.dataTransfer.getData("text/plain")) as Task;
         console.log("dragged - ", draggedTask);
-        updateTaskSchedule(draggedTask.id, user?.id!, listType).then((updatedTask) => {
+        updateTaskScheduleDB(draggedTask.id, user?.id!, listType).then((updatedTask) => {
             setCurrentTasks([...currentTasks, updatedTask]);
             if (taskListRef.current) {
                 taskListRef.current.classList.remove("border-dashed", "border-2", "border-gray-500");
@@ -68,14 +68,14 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
 
     const handleAddNewTask = async () => {
         let newTask = EmptyTaskTemplate;
-        newTask.schedule = listType;
+        newTask.currentListType = listType;
         newTask.userId = user?.id;
-        const newDbTask = await addNewTask(newTask as Task, user?.id!);
+        const newDbTask = await addNewTaskDB(newTask as Task, user?.id!);
         setCurrentTasks([...currentTasks, newDbTask]);
     };
 
     const handleDeleteTask = (id: string) => {
-        deleteTaskById(id, user?.id!).then(() => {
+        deleteTaskByIdDB(id, user?.id!).then(() => {
             console.log("Task Deleted", id);
             setCurrentTasks(currentTasks.filter((task) => task.id != id));
         });
@@ -83,7 +83,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
 
     useEffect(() => {
         const fetchTasks = async () => {
-            const result = await getAllTasksOfType(listType, user?.id!);
+            const result = await getAllTasksOfTypeDB(listType, user?.id!);
             console.log(result);
             setCurrentTasks(result);
         };

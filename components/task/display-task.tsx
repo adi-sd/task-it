@@ -53,7 +53,7 @@ const DisplayTask = forwardRef<DisplayTaskRef, DisplayTaskProps>(({ toggleEdit, 
                     </div>
                 </div>
                 {isMinimized && (
-                    <div className={twMerge(getTaskShadowColor(taskItem.schedule, "display"))}>
+                    <div className={twMerge(getTaskShadowColor(taskItem.currentListType, "display"))}>
                         {taskItem.description !== "" ? (
                             <div className="h-full w-full overflow-hidden text-ellipsis flex flex-col gap-y-2 p-4">
                                 <p className="">{taskItem.description}</p>

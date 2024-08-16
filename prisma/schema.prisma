@@ -13,10 +13,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum ScheduleTypes {
+enum TaskListTypes {
     Today
     Tomorrow
     ThisWeek
+    Completed
+    Deleted
 }
 
 model Task {
@@ -25,9 +27,9 @@ model Task {
     headline            String
     description         String
     isCompleted         Boolean           @default(false)
-    schedule            ScheduleTypes     @default(Today)
     createdAt           DateTime?         @default(now())
     lastModifiedAt      DateTime?         @default(now())
+    currentListType     TaskListTypes
 
     @@unique([id, userId])
 }

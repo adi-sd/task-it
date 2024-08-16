@@ -13,8 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 import { TaskUpdateSchema } from "@/schemas";
 import { Button } from "../ui/button";
-import { ScheduleTypes, Task } from "@prisma/client";
-import { updateTask } from "@/data/task";
+import { TaskListTypes, Task } from "@prisma/client";
+import { updateTaskDB } from "@/data/task";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
 interface EditTaskProps {
@@ -33,14 +33,14 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, handleDeleteTask
             id: taskItem.id,
             headline: taskItem.headline,
             description: taskItem.description,
-            schedule: taskItem.schedule,
             isCompleted: taskItem.isCompleted,
+            currentListType: taskItem.currentListType,
         },
     });
 
     const onSubmit = (values: z.infer<typeof TaskUpdateSchema>) => {
         startTransition(() => {
-            updateTask(values as Task, user?.id!).then((updatedTask) => {
+            updateTaskDB(values as Task, user?.id!).then((updatedTask) => {
                 if (updatedTask) {
                     toggleEdit("display", updatedTask);
                 }
@@ -104,7 +104,7 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, handleDeleteTask
                         ></FormField>
                         <FormField
                             control={form.control}
-                            name="schedule"
+                            name="currentListType"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormControl>
@@ -119,9 +119,9 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, handleDeleteTask
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                <SelectItem value={ScheduleTypes.Today}>Today</SelectItem>
-                                                <SelectItem value={ScheduleTypes.Tomorrow}>Tomorrow</SelectItem>
-                                                <SelectItem value={ScheduleTypes.ThisWeek}>This Week</SelectItem>
+                                                <SelectItem value={TaskListTypes.Today}>Today</SelectItem>
+                                                <SelectItem value={TaskListTypes.Tomorrow}>Tomorrow</SelectItem>
+                                                <SelectItem value={TaskListTypes.ThisWeek}>This Week</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </FormControl>

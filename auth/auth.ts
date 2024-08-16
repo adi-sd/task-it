@@ -4,7 +4,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/lib/db";
 import authConfig from "@/auth/auth.config";
 import { getUserById } from "@/data/user";
-import { getAccountByUserId } from "@/data/account";
+import { getAccountByUserIdDB } from "@/data/account";
 
 export const {
     handlers: { GET, POST },
@@ -58,7 +58,7 @@ export const {
             const existingUser = await getUserById(token.sub);
             if (!existingUser) return token;
 
-            const existingAccount = await getAccountByUserId(existingUser.id);
+            const existingAccount = await getAccountByUserIdDB(existingUser.id);
 
             token.name = existingUser.name;
             token.email = existingUser.email;

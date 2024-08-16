@@ -8,10 +8,9 @@ import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { twMerge } from "tailwind-merge";
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { TaskList, TaskListRef } from "./task-list";
-import { ScheduleTypes } from "@prisma/client";
+import { TaskListTypes } from "@prisma/client";
 import { getListBgColor, getListHeaderBgColor, getListTextColor } from "@/lib/utils";
 
 export interface TaskContainerRef {
@@ -19,7 +18,7 @@ export interface TaskContainerRef {
 }
 
 interface TaskContainerProps {
-    type: ScheduleTypes;
+    type: TaskListTypes;
     className?: string;
 }
 

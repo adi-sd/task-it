@@ -8,7 +8,7 @@ import { twMerge } from "tailwind-merge";
 // Components
 import { DisplayTask, DisplayTaskRef } from "./display-task";
 import { EditTask } from "./edit-task";
-import { ScheduleTypes, Task } from "@prisma/client";
+import { TaskListTypes, Task } from "@prisma/client";
 import { getTaskBgColor, getTaskBorderColor } from "@/lib/utils";
 
 interface TaskProps {
@@ -44,8 +44,8 @@ export const TaskComponent: React.FC<TaskProps> = ({ task, handleDeleteTask }) =
         <div
             className={twMerge(
                 "w-full h-fit py-2 flex flex-col gap-y-4 rounded-xl shadow-md transition-all",
-                `${getTaskBgColor(taskItemValue.schedule)}`,
-                `${getTaskBorderColor(taskItemValue.schedule, taskView)}`
+                `${getTaskBgColor(taskItemValue.currentListType)}`,
+                `${getTaskBorderColor(taskItemValue.currentListType, taskView)}`
             )}
             onClick={handleToggleDisplayMinimize}
         >
