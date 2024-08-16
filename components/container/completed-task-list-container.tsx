@@ -13,15 +13,15 @@ import { TaskList, TaskListRef } from "./task-list";
 import { getListBgColor, getListHeaderBgColor, getListTextColor } from "@/lib/utils";
 import { TaskListTypes } from "@prisma/client";
 
-export interface CompletedTaskContainerRef {
+export interface CompletedTaskListContainerRef {
     isListVisible: boolean;
 }
 
-interface CompletedTaskContainerProps {
+interface CompletedTaskListContainerProps {
     className?: string;
 }
 
-const CompletedTaskContainer = forwardRef<CompletedTaskContainerRef, CompletedTaskContainerProps>(
+const CompletedTaskListContainer = forwardRef<CompletedTaskListContainerRef, CompletedTaskListContainerProps>(
     ({ className }, ref) => {
         const taskListRef = useRef<TaskListRef>(null);
 
@@ -42,7 +42,7 @@ const CompletedTaskContainer = forwardRef<CompletedTaskContainerRef, CompletedTa
         }));
 
         return (
-            <div className={twMerge("w-full transition-all", isListVisible ? "h-[50%]" : "h-fit", className)}>
+            <div className={twMerge("w-full transition-all", isListVisible ? "md:h-[50%] h-[500px]" : "md:h-fit", className)}>
                 <div
                     className={twMerge(
                         "h-[60px] w-full flex items-center",
@@ -121,6 +121,6 @@ const CompletedTaskContainer = forwardRef<CompletedTaskContainerRef, CompletedTa
     }
 );
 
-CompletedTaskContainer.displayName = "CompletedTaskContainer";
+CompletedTaskListContainer.displayName = "CompletedTaskListContainer";
 
-export { CompletedTaskContainer };
+export { CompletedTaskListContainer };

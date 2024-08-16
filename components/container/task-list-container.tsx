@@ -13,16 +13,16 @@ import { TaskList, TaskListRef } from "./task-list";
 import { TaskListTypes } from "@prisma/client";
 import { getListBgColor, getListHeaderBgColor, getListTextColor } from "@/lib/utils";
 
-export interface TaskContainerRef {
+export interface TaskListContainerRef {
     isListVisible: boolean;
 }
 
-interface TaskContainerProps {
+interface TaskListContainerProps {
     type: TaskListTypes;
     className?: string;
 }
 
-const TaskContainer = forwardRef<TaskContainerRef, TaskContainerProps>(({ type, className }, ref) => {
+const TaskListContainer = forwardRef<TaskListContainerRef, TaskListContainerProps>(({ type, className }, ref) => {
     const taskListRef = useRef<TaskListRef>(null);
 
     const [isListVisible, setIsListVisible] = useState(true);
@@ -42,7 +42,7 @@ const TaskContainer = forwardRef<TaskContainerRef, TaskContainerProps>(({ type, 
     }));
 
     return (
-        <div className={twMerge("w-full transition-all", isListVisible ? "h-[50%]" : "h-fit", className)}>
+        <div className={twMerge("w-full transition-all", isListVisible ? "md:h-[50%] h-[500px]" : "md:h-fit", className)}>
             <div
                 className={twMerge(
                     "h-[60px] w-full flex items-center",
@@ -59,7 +59,7 @@ const TaskContainer = forwardRef<TaskContainerRef, TaskContainerProps>(({ type, 
                                 `hover:${getListTextColor(type)}`
                             )}
                         ></FaClipboardList>
-                        <span className={twMerge("font-bold text-2xl font-mono", getListTextColor(type))}>{type}</span>
+                        <span className={twMerge("font-bold md:text-2xl text-xl font-mono", getListTextColor(type))}>{type}</span>
                     </div>
                     <div className="flex gap-x-2">
                         <TooltipProvider>
@@ -113,6 +113,6 @@ const TaskContainer = forwardRef<TaskContainerRef, TaskContainerProps>(({ type, 
     );
 });
 
-TaskContainer.displayName = "TaskContainer";
+TaskListContainer.displayName = "TaskListContainer";
 
-export { TaskContainer };
+export { TaskListContainer };

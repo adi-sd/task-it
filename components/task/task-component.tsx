@@ -14,9 +14,10 @@ import { getTaskBgColor, getTaskBorderColor } from "@/lib/utils";
 interface TaskProps {
     task: Task;
     handleDeleteTask: (taskId: string) => void;
+    handleCompleteTask: (taskId: string) => void;
 }
 
-export const TaskComponent: React.FC<TaskProps> = ({ task, handleDeleteTask }) => {
+export const TaskComponent: React.FC<TaskProps> = ({ task, handleDeleteTask, handleCompleteTask }) => {
     const [taskView, setTaskView] = useState<"display" | "edit">("display");
     const [taskItemValue, setTaskItemValue] = useState(task);
 
@@ -61,6 +62,7 @@ export const TaskComponent: React.FC<TaskProps> = ({ task, handleDeleteTask }) =
                     toggleEdit={toggleEdit}
                     taskItem={taskItemValue}
                     handleDeleteTask={handleDeleteTask}
+                    handleCompleteTask={handleCompleteTask}
                     ref={displayTaskRef}
                 ></DisplayTask>
             )}

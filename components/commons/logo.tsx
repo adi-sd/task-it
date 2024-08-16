@@ -25,7 +25,7 @@ export const Logo: React.FC<LogoProps> = ({ className, enableLink, enableIcon = 
     return (
         <div
             className={twMerge(
-                "h-full w-fit text-3xl font-mono font-extrabold text-indigo-700 mx-6 p-4 my-0 hover:bg-white/50 flex flex-row items-center justify-center",
+                "h-full w-fit xl:lg:md:text-3xl sm:text-2xl text-xl text-nowrap font-mono font-extrabold text-indigo-700 mx-6 p-4 my-0 hover:bg-white/50 flex flex-row items-center justify-center",
                 className
             )}
             onClick={handleLogoClick}

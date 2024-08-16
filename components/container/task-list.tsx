@@ -4,7 +4,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "re
 
 import { EmptyTaskTemplate } from "@/types/types";
 import { TaskComponent } from "@/components/task/task-component";
-import { addNewTaskDB, deleteTaskByIdDB, getAllTasksOfTypeDB, updateTaskDB, updateTaskScheduleDB } from "@/data/task";
+import { addNewTaskDB, completeTaskByIdDB, deleteTaskByIdDB, getAllTasksOfTypeDB, updateTaskDB, updateTaskScheduleDB } from "@/data/task";
 import { Task, TaskListTypes } from "@prisma/client";
 import { BeatLoader } from "react-spinners";
 import { twMerge } from "tailwind-merge";
@@ -81,6 +81,12 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
         });
     };
 
+    const handleCompleteTask = (id: string) => {
+        completeTaskByIdDB(id, user?.id!).then((updatedTask) => {
+            setCurrentTasks(currentTasks.filter((task) => task.id != updatedTask.id));
+        });
+    }
+
     useEffect(() => {
         const fetchTasks = async () => {
             const result = await getAllTasksOfTypeDB(listType, user?.id!);
@@ -94,7 +100,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
         handleAddNewTask: handleAddNewTask,
     }));
 
-    useEffect(() => {}, [currentTasks]);
+    useEffect(() => {}, [currentTasks, setCurrentTasks]);
 
     return (
         <div
@@ -120,6 +126,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
                                                 <TaskComponent
                                                     task={task}
                                                     handleDeleteTask={() => handleDeleteTask(task.id)}
+                                                    handleCompleteTask={() => handleCompleteTask(task.id)}
                                                 ></TaskComponent>
                                             </Reorder.Item>
                                         </div>

@@ -1,17 +1,22 @@
 "use client";
 
-import { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { FaPencilAlt } from "react-icons/fa";
 import { FaTrashAlt } from "react-icons/fa";
+import { MdDoneOutline } from "react-icons/md";
 
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "../ui/button";
-import { Task } from "@prisma/client";
+import { Task, TaskListTypes } from "@prisma/client";
 import { twMerge } from "tailwind-merge";
 import { getTaskShadowColor } from "@/lib/utils";
+import { updateTaskScheduleDB } from "@/data/task";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 interface DisplayTaskProps {
     toggleEdit: (newViewValue: "display" | "edit", currentTaskValue: Task) => void;
     handleDeleteTask: (taskId: string) => void;
+    handleCompleteTask: (taskId: string) => void;
     taskItem: Task;
 }
 
@@ -19,16 +24,20 @@ export interface DisplayTaskRef {
     toggleDisplayMinimize: () => void;
 }
 
-const DisplayTask = forwardRef<DisplayTaskRef, DisplayTaskProps>(({ toggleEdit, handleDeleteTask, taskItem }, ref) => {
+const DisplayTask = forwardRef<DisplayTaskRef, DisplayTaskProps>(({ toggleEdit, handleDeleteTask, handleCompleteTask, taskItem }, ref) => {
+    const user = useCurrentUser();
     const [isMinimized, setIsMinimized] = useState(false);
 
     const onEditClicked = () => {
         toggleEdit("edit", taskItem);
     };
 
-    const onDeleteClicked = (id: string) => {
-        handleDeleteTask(id);
-    };
+    const handleCurrentListTypeUpdate = async (newListType: TaskListTypes) => {
+        const updatedTask = await updateTaskScheduleDB(taskItem.id, user?.id!, newListType);
+        if (updatedTask) {
+            toggleEdit("display", updatedTask); 
+        }
+    }
 
     useImperativeHandle(ref, () => ({
         toggleDisplayMinimize: () => {
@@ -44,11 +53,26 @@ const DisplayTask = forwardRef<DisplayTaskRef, DisplayTaskProps>(({ toggleEdit, 
                         <span className="text-nowrap overflow-hidden text-ellipsis mr-4">{taskItem.headline}</span>
                     </div>
                     <div className="ml-auto flex gap-x-2">
+                        <div className="md:hidden w-[130px]">
+                            <Select value={taskItem.currentListType} onValueChange={handleCurrentListTypeUpdate}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Schedule This Task..."></SelectValue>
+                                </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value={TaskListTypes.Today}>Today</SelectItem>
+                                <SelectItem value={TaskListTypes.Tomorrow}>Tomorrow</SelectItem>
+                                <SelectItem value={TaskListTypes.ThisWeek}>This Week</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        </div>
                         <Button onClick={onEditClicked} className="bg-white text-black p-3">
                             <FaPencilAlt size={15}></FaPencilAlt>
                         </Button>
-                        <Button onClick={() => onDeleteClicked(taskItem.id)} className=" bg-white text-black p-3">
+                        <Button onClick={() => handleDeleteTask(taskItem.id)} className=" bg-white text-black p-3">
                             <FaTrashAlt size={15}></FaTrashAlt>
+                        </Button>
+                        <Button onClick={() => handleCompleteTask(taskItem.id)} className=" bg-white text-black p-3">
+                            <MdDoneOutline size={15}></MdDoneOutline>
                         </Button>
                     </div>
                 </div>

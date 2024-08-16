@@ -87,13 +87,33 @@ export const updateTaskDB = async (values: z.infer<typeof TaskUpdateSchema>, use
 
 export const deleteTaskByIdDB = async (id: string, userId: string) => {
     try {
-        const tasks = await db.task.delete({
+        const task = await db.task.delete({
             where: {
                 id,
                 userId,
             },
         });
-        return tasks;
+        return task;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+export const completeTaskByIdDB = async (id: string, userId: string) => {
+    try {
+        const updatedTask = await db.task.update({
+            where: {
+                id,
+                userId,
+            },
+            data: {
+                isCompleted: true,
+                isDeleted: false,
+                currentListType: TaskListTypes.Completed,
+            }
+        });
+        return updatedTask;
     } catch (error) {
         console.error(error);
         throw error;
@@ -130,7 +150,7 @@ export const updateTaskScheduleDB = async (taskId: string, userId: string, listT
         }
 
         const updatedTask = await db.task.update({
-            where: { id: existingTask.id },
+            where: { id: existingTask.id, userId: userId },
             data: updatedData,
         });
         return updatedTask;

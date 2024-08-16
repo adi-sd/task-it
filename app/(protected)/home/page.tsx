@@ -6,9 +6,9 @@ const HomePage = async () => {
     const session = await auth();
 
     return (
-        <main className="w-full h-full overflow-hidden">
-            <NavBar className="w-full h-[60px]" currentUser={session?.user}></NavBar>
-            <ScheduledTaskContainers className="w-full h-[calc(100vh-60px)]"></ScheduledTaskContainers>
+        <main className="w-full h-full md:overflow-hidden overflow-y-scroll">
+            <NavBar className="fixed md:relative w-full h-[60px] z-50" currentUser={session?.user}></NavBar>
+            <ScheduledTaskContainers className="w-full md:h-[calc(100vh-60px)] h-auto top-[60px] absolute"></ScheduledTaskContainers>
         </main>
     );
 };
