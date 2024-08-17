@@ -38,24 +38,18 @@ interface StandaloneEditTaskProps {
 
 type EditTaskProps = DialogEditTaskProps | StandaloneEditTaskProps;
 
-export const EditTask: React.FC<EditTaskProps> = ({
-    isDialog,
-    setOpen,
-    toggleEdit,
-    handleDeleteTask,
-    taskItem = EmptyTaskTemplate as Task,
-}) => {
+export const EditTask: React.FC<EditTaskProps> = ({ isDialog, setOpen, toggleEdit, handleDeleteTask, taskItem }) => {
     const user = useCurrentUser();
     const [isPending, startTransition] = useTransition();
 
     const form = useForm<z.infer<typeof TaskUpdateSchema>>({
         resolver: zodResolver(TaskUpdateSchema),
         defaultValues: {
-            id: taskItem.id,
-            headline: taskItem.headline,
-            description: taskItem.description,
-            isCompleted: taskItem.isCompleted,
-            currentListType: taskItem.currentListType,
+            id: taskItem?.id,
+            headline: taskItem?.headline,
+            description: taskItem?.description,
+            isCompleted: taskItem?.isCompleted,
+            currentListType: taskItem?.currentListType,
         },
     });
 

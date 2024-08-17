@@ -4,12 +4,13 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "re
 
 import { EmptyTaskTemplate } from "@/types/types";
 import { TaskComponent } from "@/components/task/task-component";
-import { addNewTaskDB, completeTaskByIdDB, deleteTaskByIdDB, getAllTasksOfTypeDB, updateTaskDB, updateTaskScheduleDB } from "@/data/task";
+import { addNewTaskDB, completeTaskByIdDB, deleteTaskByIdDB, updateTaskScheduleDB } from "@/data/task";
 import { Task, TaskListTypes } from "@prisma/client";
 import { BeatLoader } from "react-spinners";
 import { twMerge } from "tailwind-merge";
 import { getSignatureColor, getListTextColor } from "@/lib/utils";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { useTasksStore } from "@/state/store";
 
 interface TaskListProps {
     className?: string;
@@ -24,18 +25,21 @@ export const revalidate = 0;
 
 const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }, ref) => {
     const user = useCurrentUser();
+    const isLoading = useTasksStore((state) => state.isLoading);
     const taskListRef = useRef<HTMLDivElement>(null);
-    const [currentTasks, setCurrentTasks] = useState<Task[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const currentTasks = useTasksStore((state) => state.Tasks[listType]);
+    const {
+        addTask: addTaskStore,
+        deleteTask: deleteTaskStore,
+        setTypesSpecificTasks: setTypesSpecificTasksStore,
+    } = useTasksStore((state) => ({ ...state }));
 
     const handleOnDragStart = (event: React.DragEvent, draggedTask: Task) => {
         if (event.dataTransfer) {
             event.dataTransfer.setData("text/plain", JSON.stringify(draggedTask));
             event.dataTransfer.effectAllowed = "move";
             setTimeout(() => {
-                setCurrentTasks((currentTasks) => {
-                    return currentTasks.filter((task) => task.id !== draggedTask.id);
-                });
+                deleteTaskStore(draggedTask.id);
             }, 100);
         }
     };
@@ -53,7 +57,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
         const draggedTask = JSON.parse(event.dataTransfer.getData("text/plain")) as Task;
         console.log("dragged - ", draggedTask);
         updateTaskScheduleDB(draggedTask.id, user?.id!, listType).then((updatedTask) => {
-            setCurrentTasks([...currentTasks, updatedTask]);
+            addTaskStore(updatedTask);
             if (taskListRef.current) {
                 taskListRef.current.classList.remove("border-dashed", "border-2", "border-gray-500");
             }
@@ -71,37 +75,25 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
         newTask.currentListType = listType;
         newTask.userId = user?.id;
         const newDbTask = await addNewTaskDB(newTask as Task, user?.id!);
-        setCurrentTasks([...currentTasks, newDbTask]);
+        addTaskStore(newDbTask);
     };
 
     const handleDeleteTask = (id: string) => {
         deleteTaskByIdDB(id, user?.id!).then(() => {
             console.log("Task Deleted", id);
-            setCurrentTasks(currentTasks.filter((task) => task.id != id));
+            deleteTaskStore(id);
         });
     };
 
-    
     const handleCompleteTask = (id: string) => {
         completeTaskByIdDB(id, user?.id!).then((updatedTask) => {
-            setCurrentTasks(currentTasks.filter((task) => task.id != updatedTask.id));
+            deleteTaskStore(updatedTask.id);
         });
-    }
-
-    useEffect(() => {
-        const fetchTasks = async () => {
-            const result = await getAllTasksOfTypeDB(listType, user?.id!);
-            console.log(result);
-            setCurrentTasks(result);
-        };
-        fetchTasks().finally(() => setIsLoading(false));
-    }, [listType]);
+    };
 
     useImperativeHandle(ref, () => ({
         handleAddNewTask: handleAddNewTask,
     }));
-
-    useEffect(() => {}, [currentTasks, setCurrentTasks]);
 
     return (
         <div
@@ -117,7 +109,9 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
                         <div className="w-full h-full flex items-center justify-center">
                             <Reorder.Group
                                 values={currentTasks}
-                                onReorder={setCurrentTasks}
+                                onReorder={() => {
+                                    setTypesSpecificTasksStore(listType, currentTasks);
+                                }}
                                 className="w-full h-full flex flex-col gap-y-3"
                             >
                                 {currentTasks.map((task, index, row) => {
@@ -125,7 +119,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
                                         <div key={task.id} draggable onDragStart={(e) => handleOnDragStart(e, task)}>
                                             <Reorder.Item value={task} className="h-fit">
                                                 <TaskComponent
-                                                    task={task}
+                                                    taskId={task.id}
                                                     handleDeleteTask={() => handleDeleteTask(task.id)}
                                                     handleCompleteTask={() => handleCompleteTask(task.id)}
                                                 ></TaskComponent>

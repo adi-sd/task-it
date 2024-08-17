@@ -2,18 +2,36 @@
 
 import { twMerge } from "tailwind-merge";
 import { TaskListContainer, TaskListContainerRef } from "./task-list-container";
-import { TaskListTypes } from "@prisma/client";
-import { useRef } from "react";
+import { Task, TaskListTypes } from "@prisma/client";
 import { CompletedTaskListContainer } from "./completed-task-list-container";
+import { useTasksStore } from "@/state/store";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { getAllTasksDB } from "@/data/task";
+import { set } from "zod";
 
 interface ScheduledTaskContainersProps {
     className?: string;
 }
 
 export const ScheduledTaskContainers: React.FC<ScheduledTaskContainersProps> = ({ className }) => {
-    const TomorrowListRef = useRef<TaskListContainerRef>(null);
-    const ThisWeekListRef = useRef<TaskListContainerRef>(null);
-    const CompletedLisRef = useRef<TaskListContainerRef>(null);
+    const user = useCurrentUser();
+    const { setAllTasks: setAllTasksStore, setIsLoading } = useTasksStore((state) => ({ ...state }));
+
+    useEffect(() => {
+        const fetchTasks = async () => {
+            getAllTasksDB(user?.id!)
+                .then((tasks: Task[]) => {
+                    setAllTasksStore(tasks);
+                })
+                .catch((error: Error) => {
+                    console.error(error);
+                });
+        };
+        setIsLoading(true);
+        fetchTasks().finally(() => setIsLoading(false));
+    }, [setAllTasksStore, user]);
 
     return (
         <div
@@ -24,9 +42,9 @@ export const ScheduledTaskContainers: React.FC<ScheduledTaskContainersProps> = (
         >
             <TaskListContainer className="md:h-full md:w-[35%] w-full" type={TaskListTypes.Today}></TaskListContainer>
             <div className="h-full md:w-[35%] w-full flex flex-col gap-y-6">
-                <TaskListContainer ref={TomorrowListRef} type={TaskListTypes.Tomorrow}></TaskListContainer>
-                <TaskListContainer ref={ThisWeekListRef} type={TaskListTypes.ThisWeek}></TaskListContainer>
-                <CompletedTaskListContainer ref={CompletedLisRef}></CompletedTaskListContainer>
+                <TaskListContainer type={TaskListTypes.Tomorrow}></TaskListContainer>
+                <TaskListContainer type={TaskListTypes.ThisWeek}></TaskListContainer>
+                <CompletedTaskListContainer></CompletedTaskListContainer>
             </div>
         </div>
     );

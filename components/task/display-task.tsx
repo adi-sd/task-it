@@ -25,7 +25,7 @@ export interface DisplayTaskRef {
 }
 
 const DisplayTask = forwardRef<DisplayTaskRef, DisplayTaskProps>(
-    ({ toggleEdit, handleDeleteTask, handleCompleteTask, handleUnCompleteTask, taskItem }, ref) => {
+    ({ toggleEdit, handleDeleteTask, handleCompleteTask, taskItem }, ref) => {
         const user = useCurrentUser();
         const [isMinimized, setIsMinimized] = useState(false);
 

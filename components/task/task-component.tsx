@@ -10,22 +10,25 @@ import { DisplayTask, DisplayTaskRef } from "./display-task";
 import { EditTask } from "./edit-task";
 import { TaskListTypes, Task } from "@prisma/client";
 import { getTaskBgColor, getTaskBorderColor } from "@/lib/utils";
+import { useTasksStore } from "@/state/store";
 
 interface TaskProps {
-    task: Task;
+    taskId: string;
     handleDeleteTask: (taskId: string) => void;
     handleCompleteTask: (taskId: string) => void;
 }
 
-export const TaskComponent: React.FC<TaskProps> = ({ task, handleDeleteTask, handleCompleteTask }) => {
+export const TaskComponent: React.FC<TaskProps> = ({ taskId, handleDeleteTask, handleCompleteTask }) => {
     const [taskView, setTaskView] = useState<"display" | "edit">("display");
-    const [taskItemValue, setTaskItemValue] = useState(task);
+    // const [taskItemValue, setTaskItemValue] = useState(task);
+    const taskItemValue = useTasksStore((state) => state.getTaskById(taskId));
+    const updateTaskStore = useTasksStore((state) => state.updateTask);
 
     const displayTaskRef = useRef<DisplayTaskRef>(null);
 
     const toggleEdit = (newViewValue: "display" | "edit", currentTaskItemValue: Task) => {
         setTaskView(newViewValue);
-        setTaskItemValue(currentTaskItemValue);
+        updateTaskStore(currentTaskItemValue);
     };
 
     const handleToggleDisplayMinimize = (event: MouseEvent<HTMLDivElement>) => {
@@ -35,11 +38,13 @@ export const TaskComponent: React.FC<TaskProps> = ({ task, handleDeleteTask, han
         }
     };
 
+    if (!taskItemValue) return null;
+
     useEffect(() => {
         if (taskItemValue.headline === "") {
             setTaskView("edit");
         }
-    }, [taskItemValue]);
+    }, []);
 
     return (
         <div

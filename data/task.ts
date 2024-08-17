@@ -53,6 +53,7 @@ export const getTaskByIdDB = async (taskId: string, userId: string) => {
 export const addNewTaskDB = async (task: Task, userId: string) => {
     try {
         const newTask = await db.task.create({ data: { ...task, userId: userId } });
+        console.log("Task Added - ", newTask);
         return newTask;
     } catch (error) {
         console.error(error);
