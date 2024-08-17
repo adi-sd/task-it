@@ -14,16 +14,37 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { TaskUpdateSchema } from "@/schemas";
 import { Button } from "../ui/button";
 import { TaskListTypes, Task } from "@prisma/client";
-import { updateTaskDB } from "@/data/task";
+import { addNewTaskDB, updateTaskDB } from "@/data/task";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { EmptyTaskTemplate } from "@/types/types";
+import { toast } from "sonner";
+import { twMerge } from "tailwind-merge";
 
-interface EditTaskProps {
+interface DialogEditTaskProps {
+    isDialog: true;
+    setOpen: (value: boolean) => void;
+    toggleEdit?: (newViewValue: "display" | "edit", currentTaskItemValue: Task) => void;
+    handleDeleteTask?: (taskId: string) => void;
+    taskItem?: Task;
+}
+
+interface StandaloneEditTaskProps {
+    isDialog?: false;
+    setOpen?: (value: boolean) => void; // Add setOpen property
     toggleEdit: (newViewValue: "display" | "edit", currentTaskItemValue: Task) => void;
     handleDeleteTask: (taskId: string) => void;
     taskItem: Task;
 }
 
-export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, handleDeleteTask, taskItem }) => {
+type EditTaskProps = DialogEditTaskProps | StandaloneEditTaskProps;
+
+export const EditTask: React.FC<EditTaskProps> = ({
+    isDialog,
+    setOpen,
+    toggleEdit,
+    handleDeleteTask,
+    taskItem = EmptyTaskTemplate as Task,
+}) => {
     const user = useCurrentUser();
     const [isPending, startTransition] = useTransition();
 
@@ -40,11 +61,20 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, handleDeleteTask
 
     const onSubmit = (values: z.infer<typeof TaskUpdateSchema>) => {
         startTransition(() => {
-            updateTaskDB(values as Task, user?.id!).then((updatedTask) => {
-                if (updatedTask) {
-                    toggleEdit("display", updatedTask);
-                }
-            });
+            if (isDialog) {
+                addNewTaskDB(values as Task, user?.id!).then((newTask) => {
+                    if (newTask) {
+                        toast.success("Task Added Successfully");
+                        setOpen(false);
+                    }
+                });
+            } else {
+                updateTaskDB(values as Task, user?.id!).then((updatedTask) => {
+                    if (updatedTask) {
+                        toggleEdit("display", updatedTask);
+                    }
+                });
+            }
         });
     };
 
@@ -62,7 +92,7 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, handleDeleteTask
                                 control={form.control}
                                 name="headline"
                                 render={({ field }) => (
-                                    <FormItem className="w-full mr-3">
+                                    <FormItem className={twMerge("w-full mr-3")}>
                                         <FormControl>
                                             <Input
                                                 {...field}
@@ -79,12 +109,14 @@ export const EditTask: React.FC<EditTaskProps> = ({ toggleEdit, handleDeleteTask
                                 <Button type="submit" className="bg-white text-black p-3" disabled={isPending}>
                                     <FaCheck></FaCheck>
                                 </Button>
-                                <Button
-                                    onClick={() => onDeleteClicked(taskItem.id)}
-                                    className="bg-white text-black p-3"
-                                >
-                                    <FaTrashAlt size={15}></FaTrashAlt>
-                                </Button>
+                                {!isDialog && (
+                                    <Button
+                                        onClick={() => onDeleteClicked(taskItem.id)}
+                                        className="bg-white text-black p-3"
+                                    >
+                                        <FaTrashAlt size={15}></FaTrashAlt>
+                                    </Button>
+                                )}
                             </div>
                         </div>
                         <FormField

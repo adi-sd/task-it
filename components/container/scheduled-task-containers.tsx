@@ -16,9 +16,14 @@ export const ScheduledTaskContainers: React.FC<ScheduledTaskContainersProps> = (
     const CompletedLisRef = useRef<TaskListContainerRef>(null);
 
     return (
-        <div className={twMerge("flex md:flex-row flex-col items-center justify-center md:gap-x-6 gap-y-6 p-6", className)}>
-            <TaskListContainer className="md:h-full md:w-[40%] w-full" type={TaskListTypes.Today}></TaskListContainer>
-            <div className="h-full md:w-[40%] w-full flex flex-col gap-y-6">
+        <div
+            className={twMerge(
+                "flex md:flex-row flex-col items-center justify-center md:gap-x-6 gap-y-6 p-6",
+                className
+            )}
+        >
+            <TaskListContainer className="md:h-full md:w-[35%] w-full" type={TaskListTypes.Today}></TaskListContainer>
+            <div className="h-full md:w-[35%] w-full flex flex-col gap-y-6">
                 <TaskListContainer ref={TomorrowListRef} type={TaskListTypes.Tomorrow}></TaskListContainer>
                 <TaskListContainer ref={ThisWeekListRef} type={TaskListTypes.ThisWeek}></TaskListContainer>
                 <CompletedTaskListContainer ref={CompletedLisRef}></CompletedTaskListContainer>

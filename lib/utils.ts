@@ -68,8 +68,10 @@ export const getListTextColor = (type: TaskListTypes) => {
     }
 };
 
-export const getTaskBgColor = (type: TaskListTypes) => {
-    return getListHeaderBgColor(type);
+export const getTaskBgColor = (type: TaskListTypes, taskView?: TaskViewType) => {
+    if (taskView == "display" || taskView == "edit") {
+        return getListHeaderBgColor(type);
+    }
 };
 
 export const getTaskBorderColor = (type: TaskListTypes, taskView: TaskViewType) => {

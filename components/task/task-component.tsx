@@ -45,7 +45,7 @@ export const TaskComponent: React.FC<TaskProps> = ({ task, handleDeleteTask, han
         <div
             className={twMerge(
                 "w-full h-fit py-2 flex flex-col gap-y-4 rounded-xl shadow-md transition-all",
-                `${getTaskBgColor(taskItemValue.currentListType)}`,
+                `${getTaskBgColor(taskItemValue.currentListType, taskView)}`,
                 `${getTaskBorderColor(taskItemValue.currentListType, taskView)}`
             )}
             onClick={handleToggleDisplayMinimize}
