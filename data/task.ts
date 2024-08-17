@@ -102,18 +102,42 @@ export const deleteTaskByIdDB = async (id: string, userId: string) => {
 
 export const completeTaskByIdDB = async (id: string, userId: string) => {
     try {
-        const updatedTask = await db.task.update({
+        const existingTask = await db.task.findUnique({
             where: {
-                id,
-                userId,
+                id: id,
+                userId: userId,
             },
-            data: {
-                isCompleted: true,
-                isDeleted: false,
-                currentListType: TaskListTypes.Completed,
-            }
         });
-        return updatedTask;
+        if (!existingTask) {
+            throw new Error("Task Not Found with given ID or User ID");
+        }
+        if (existingTask.isCompleted) {
+            const updatedTask = await db.task.update({
+                where: {
+                    id,
+                    userId,
+                },
+                data: {
+                    isCompleted: false,
+                    isDeleted: true,
+                    currentListType: TaskListTypes.Today,
+                },
+            });
+            return updatedTask;
+        } else {
+            const updatedTask = await db.task.update({
+                where: {
+                    id,
+                    userId,
+                },
+                data: {
+                    isCompleted: true,
+                    isDeleted: false,
+                    currentListType: TaskListTypes.Completed,
+                },
+            });
+            return updatedTask;
+        }
     } catch (error) {
         console.error(error);
         throw error;

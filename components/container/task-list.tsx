@@ -81,6 +81,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
         });
     };
 
+    
     const handleCompleteTask = (id: string) => {
         completeTaskByIdDB(id, user?.id!).then((updatedTask) => {
             setCurrentTasks(currentTasks.filter((task) => task.id != updatedTask.id));

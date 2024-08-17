@@ -79,7 +79,9 @@ export const EditTask: React.FC<EditTaskProps> = ({
     };
 
     const onDeleteClicked = (id: string) => {
-        handleDeleteTask(id);
+        if (!isDialog) {
+            handleDeleteTask(id);
+        }
     };
 
     return (
