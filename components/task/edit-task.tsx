@@ -16,7 +16,6 @@ import { Button } from "../ui/button";
 import { TaskListTypes, Task } from "@prisma/client";
 import { addNewTaskDB, updateTaskDB } from "@/data/task";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { EmptyTaskTemplate } from "@/types/types";
 import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
 
@@ -25,7 +24,7 @@ interface DialogEditTaskProps {
     setOpen: (value: boolean) => void;
     toggleEdit?: (newViewValue: "display" | "edit", currentTaskItemValue: Task) => void;
     handleDeleteTask?: (taskId: string) => void;
-    taskItem?: Task;
+    taskItem: Task;
 }
 
 interface StandaloneEditTaskProps {
@@ -55,20 +54,16 @@ export const EditTask: React.FC<EditTaskProps> = ({ isDialog, setOpen, toggleEdi
 
     const onSubmit = (values: z.infer<typeof TaskUpdateSchema>) => {
         startTransition(() => {
-            if (isDialog) {
-                addNewTaskDB(values as Task, user?.id!).then((newTask) => {
-                    if (newTask) {
-                        toast.success("Task Added Successfully");
+            updateTaskDB(values as Task, user?.id!).then((updatedTask) => {
+                if (updatedTask) {
+                    if (isDialog) {
                         setOpen(false);
-                    }
-                });
-            } else {
-                updateTaskDB(values as Task, user?.id!).then((updatedTask) => {
-                    if (updatedTask) {
+                    } else {
                         toggleEdit("display", updatedTask);
                     }
-                });
-            }
+                    toast.success("Task Updated Successfully!");
+                }
+            });
         });
     };
 

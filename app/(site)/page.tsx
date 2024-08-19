@@ -10,7 +10,7 @@ const RootPage = async () => {
                 <div className="w-[700px] h-[300px] flex flex-col gap-y-10 items-center justify-center border-4 border-slate-500 rounded-xl">
                     <div>
                         <h1 className="text-2xl font-semibold">
-                            Welcome to <span className="font-mono font-extrabold text-indigo-500">task-it</span> Please
+                            Welcome to <span className="font-mono font-extrabold text-indigo-700">task-it</span> Please
                             Login/Register to proceed!
                         </h1>
                     </div>

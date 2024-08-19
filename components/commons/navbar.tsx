@@ -48,8 +48,14 @@ export const NavBar: React.FC<NavBarProps> = ({ className, currentUser }) => {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="mt-2">
                                     <DropdownMenuLabel className="text-xl font-bold font-mono mx-4">
-                                        My Account
+                                        Account Details :
                                     </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem className="mx-4 flex gap-x-2 items-center justify-start">
+                                        <LogoutButton>
+                                            <span className="text-lg font-mono">{currentUser.email}</span>
+                                        </LogoutButton>
+                                    </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem className="mx-4 flex gap-x-2 items-center justify-start">
                                         <IoMdExit size={25}></IoMdExit>
