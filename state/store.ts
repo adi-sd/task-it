@@ -123,3 +123,4 @@ export const useTasksStore = create<State & Actions>((set) => ({
         return allTasks.find((task) => task.id === taskId);
     },
 }));
+
