@@ -15,11 +15,17 @@ import { TaskViewType } from "@/types/types";
 
 interface TaskProps {
     taskId: string;
-    handleDeleteTask: (taskId: string) => void;
+    handleMarkTaskDeleted: (taskId: string) => void;
     handleCompleteTask: (taskId: string) => void;
+    handleDeleteTask: (taskId: string) => void;
 }
 
-export const TaskComponent: React.FC<TaskProps> = ({ taskId, handleDeleteTask, handleCompleteTask }) => {
+export const TaskComponent: React.FC<TaskProps> = ({
+    taskId,
+    handleMarkTaskDeleted,
+    handleCompleteTask,
+    handleDeleteTask,
+}) => {
     const [taskView, setTaskView] = useState<"display" | "edit">("display");
     // const [taskItemValue, setTaskItemValue] = useState(task);
     const taskItemValue = useTasksStore((state) => state.getTaskById(taskId));
@@ -50,7 +56,7 @@ export const TaskComponent: React.FC<TaskProps> = ({ taskId, handleDeleteTask, h
     return (
         <div
             className={twMerge(
-                "w-full h-fit py-2 flex flex-col gap-y-4 rounded-xl shadow-md transition-all",
+                "w-full h-fit py-2 flex flex-col gap-y-4 rounded-xl shadow-md transition-all duration-75",
                 `${getTaskBgColor(taskItemValue.currentListType, taskView)}`,
                 `${getTaskBorderColor(taskItemValue.currentListType, taskView)}`
             )}
@@ -61,14 +67,15 @@ export const TaskComponent: React.FC<TaskProps> = ({ taskId, handleDeleteTask, h
                 <EditTask
                     toggleEdit={toggleEdit}
                     taskItem={taskItemValue}
-                    handleDeleteTask={handleDeleteTask}
+                    handleMarkTaskDeleted={handleMarkTaskDeleted}
                 ></EditTask>
             ) : (
                 <DisplayTask
                     toggleEdit={toggleEdit}
                     taskItem={taskItemValue}
-                    handleDeleteTask={handleDeleteTask}
+                    handleMarkTaskDeleted={handleMarkTaskDeleted}
                     handleCompleteTask={handleCompleteTask}
+                    handleDeleteTask={handleDeleteTask}
                     ref={displayTaskRef}
                 ></DisplayTask>
             )}

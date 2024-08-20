@@ -26,6 +26,7 @@ export const TaskUpdateSchema = z.object({
         TaskListTypes.Deleted,
     ]),
     isCompleted: z.optional(z.boolean()),
+    isDeleted: z.optional(z.boolean()),
 });
 
 export const LoginSchema = z.object({

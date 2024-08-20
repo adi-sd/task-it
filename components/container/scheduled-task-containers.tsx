@@ -8,6 +8,7 @@ import { useTasksStore } from "@/state/store";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useEffect } from "react";
 import { getAllTasksDB } from "@/data/task";
+import { DeletedTaskListContainer } from "./deleted-task-list-container";
 
 interface ScheduledTaskContainersProps {
     className?: string;
@@ -43,6 +44,7 @@ export const ScheduledTaskContainers: React.FC<ScheduledTaskContainersProps> = (
                 <TaskListContainer type={TaskListTypes.Tomorrow}></TaskListContainer>
                 <TaskListContainer type={TaskListTypes.ThisWeek}></TaskListContainer>
                 <CompletedTaskListContainer></CompletedTaskListContainer>
+                <DeletedTaskListContainer></DeletedTaskListContainer>
             </div>
         </div>
     );

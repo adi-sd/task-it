@@ -4,7 +4,13 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "re
 
 import { EmptyTaskTemplate } from "@/types/types";
 import { TaskComponent } from "@/components/task/task-component";
-import { addNewTaskDB, completeTaskByIdDB, deleteTaskByIdDB, updateTaskScheduleDB } from "@/data/task";
+import {
+    addNewTaskDB,
+    completeTaskToggleByIdDB,
+    deleteTaskByIdDB,
+    deleteTaskMarkToggleByID,
+    updateTaskScheduleDB,
+} from "@/data/task";
 import { Task, TaskListTypes } from "@prisma/client";
 import { BeatLoader } from "react-spinners";
 import { twMerge } from "tailwind-merge";
@@ -63,6 +69,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
             if (taskListRef.current) {
                 taskListRef.current.classList.remove("border-dashed", "border-2", "border-gray-500");
             }
+            toast.success("Task Schedule Updated!");
         });
     };
 
@@ -87,6 +94,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
         addNewTaskDB(newTask as Task, user?.id!)
             .then((newDbTask) => {
                 console.log("Task Added - ", newDbTask);
+                toast.success("New Task Added!");
                 addTaskStore(newDbTask);
             })
             .catch((error) => {
@@ -95,11 +103,24 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
             });
     };
 
-    const handleDeleteTask = (id: string) => {
+    const handleMarkTaskDeleted = (id: string) => {
+        deleteTaskMarkToggleByID(id, user?.id!)
+            .then((updatedTask) => {
+                updateTaskStore(updatedTask);
+                toast.success("Task Sent to Bin!");
+            })
+            .catch((error) => {
+                console.error("Failed to send task to Bin!", error);
+                toast.error("Failed to send task to Bin!");
+            });
+    };
+
+    const handlePermanentDeleteTask = (id: string) => {
         deleteTaskByIdDB(id, user?.id!)
             .then(() => {
                 console.log("Task Deleted", id);
                 deleteTaskStore(id);
+                toast.success("Task Deleted Permanently!");
             })
             .catch((error) => {
                 console.error("Failed to Delete Task!", error);
@@ -108,9 +129,10 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
     };
 
     const handleCompleteTask = (id: string) => {
-        completeTaskByIdDB(id, user?.id!)
+        completeTaskToggleByIdDB(id, user?.id!)
             .then((updatedTask) => {
                 updateTaskStore(updatedTask);
+                toast.success("Task Completed!");
             })
             .catch((error) => {
                 console.error("Failed to Complete Task!", error);
@@ -152,8 +174,9 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
                                             <Reorder.Item value={task} className="h-fit">
                                                 <TaskComponent
                                                     taskId={task.id}
-                                                    handleDeleteTask={() => handleDeleteTask(task.id)}
+                                                    handleMarkTaskDeleted={() => handleMarkTaskDeleted(task.id)}
                                                     handleCompleteTask={() => handleCompleteTask(task.id)}
+                                                    handleDeleteTask={() => handlePermanentDeleteTask(task.id)}
                                                 ></TaskComponent>
                                             </Reorder.Item>
                                         </div>

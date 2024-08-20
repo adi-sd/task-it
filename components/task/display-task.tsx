@@ -1,8 +1,7 @@
 "use client";
 
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { FaPencilAlt } from "react-icons/fa";
-import { FaTrashAlt } from "react-icons/fa";
+import { forwardRef, useImperativeHandle, useState } from "react";
+import { FaPencilAlt, FaTrashAlt, FaTrashRestoreAlt } from "react-icons/fa";
 import { FcOk, FcCancel } from "react-icons/fc";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -18,8 +17,9 @@ import { toast } from "sonner";
 
 interface DisplayTaskProps {
     toggleEdit: (newViewValue: TaskViewType, currentTaskValue: Task) => void;
-    handleDeleteTask: (taskId: string) => void;
+    handleMarkTaskDeleted: (taskId: string) => void;
     handleCompleteTask: (taskId: string) => void;
+    handleDeleteTask: (taskId: string) => void;
     taskItem: Task;
 }
 
@@ -28,7 +28,7 @@ export interface DisplayTaskRef {
 }
 
 const DisplayTask = forwardRef<DisplayTaskRef, DisplayTaskProps>(
-    ({ toggleEdit, handleDeleteTask, handleCompleteTask, taskItem }, ref) => {
+    ({ toggleEdit, handleMarkTaskDeleted, handleCompleteTask, handleDeleteTask, taskItem }, ref) => {
         const user = useCurrentUser();
         const updateTaskStore = useTasksStore((state) => state.updateTask);
         const [isMinimized, setIsMinimized] = useState(false);
@@ -41,6 +41,7 @@ const DisplayTask = forwardRef<DisplayTaskRef, DisplayTaskProps>(
             updateTaskScheduleDB(taskItem.id, user?.id!, newListType)
                 .then((updatedTask) => {
                     updateTaskStore(updatedTask);
+                    toast.success("Task Schedule Updated!");
                     toggleEdit("display", updatedTask);
                 })
                 .catch((error) => {
@@ -75,33 +76,52 @@ const DisplayTask = forwardRef<DisplayTaskRef, DisplayTaskProps>(
                                     </SelectContent>
                                 </Select>
                             </div>
+                            {!taskItem.isDeleted && (
+                                <Button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onEditClicked();
+                                    }}
+                                    className="bg-white text-black p-3"
+                                >
+                                    <FaPencilAlt size={15}></FaPencilAlt>
+                                </Button>
+                            )}
                             <Button
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    onEditClicked();
-                                }}
-                                className="bg-white text-black p-3"
-                            >
-                                <FaPencilAlt size={15}></FaPencilAlt>
-                            </Button>
-                            <Button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeleteTask(taskItem.id);
-                                }}
-                                className=" bg-white text-black p-3"
-                            >
-                                <FaTrashAlt size={15}></FaTrashAlt>
-                            </Button>
-                            <Button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleCompleteTask(taskItem.id);
+                                    handleMarkTaskDeleted(taskItem.id);
                                 }}
                                 className=" bg-white text-black p-3"
                             >
-                                {!taskItem.isCompleted ? <FcOk size={20}></FcOk> : <FcCancel size={20}></FcCancel>}
+                                {!taskItem.isDeleted ? (
+                                    <FaTrashAlt size={15}></FaTrashAlt>
+                                ) : (
+                                    <FaTrashRestoreAlt size={15}></FaTrashRestoreAlt>
+                                )}
                             </Button>
+                            {!taskItem.isDeleted && (
+                                <Button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleCompleteTask(taskItem.id);
+                                    }}
+                                    className=" bg-white text-black p-3"
+                                >
+                                    {!taskItem.isCompleted ? <FcOk size={20}></FcOk> : <FcCancel size={20}></FcCancel>}
+                                </Button>
+                            )}
+                            {taskItem.isDeleted && (
+                                <Button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteTask(taskItem.id);
+                                    }}
+                                    className=" bg-white text-black p-3"
+                                >
+                                    <FaTrashAlt size={15} className="text-red-600"></FaTrashAlt>
+                                </Button>
+                            )}
                         </div>
                     </div>
                     {isMinimized && (

@@ -101,7 +101,53 @@ export const deleteTaskByIdDB = async (id: string, userId: string) => {
     }
 };
 
-export const completeTaskByIdDB = async (id: string, userId: string) => {
+export const deleteTaskMarkToggleByID = async (id: string, userId: string) => {
+    try {
+        const existingTask = await db.task.findUnique({
+            where: {
+                id: id,
+                userId: userId,
+            },
+        });
+        if (!existingTask) {
+            throw new Error("Task Not Found with given ID or User ID");
+        }
+        if (existingTask.isDeleted) {
+            const updatedTask = await db.task.update({
+                where: {
+                    id,
+                    userId,
+                },
+                data: {
+                    isCompleted: existingTask.isCompleted,
+                    isDeleted: false,
+                    currentListType: existingTask.oldListType,
+                    oldListType: TaskListTypes.Deleted,
+                },
+            });
+            return updatedTask;
+        } else {
+            const updatedTask = await db.task.update({
+                where: {
+                    id,
+                    userId,
+                },
+                data: {
+                    isCompleted: existingTask.isCompleted,
+                    isDeleted: true,
+                    currentListType: TaskListTypes.Deleted,
+                    oldListType: existingTask.currentListType,
+                },
+            });
+            return updatedTask;
+        }
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+export const completeTaskToggleByIdDB = async (id: string, userId: string) => {
     try {
         const existingTask = await db.task.findUnique({
             where: {
@@ -120,8 +166,11 @@ export const completeTaskByIdDB = async (id: string, userId: string) => {
                 },
                 data: {
                     isCompleted: false,
-                    isDeleted: true,
-                    currentListType: existingTask.oldListType,
+                    isDeleted: existingTask.isDeleted,
+                    currentListType:
+                        existingTask.oldListType !== TaskListTypes.Deleted
+                            ? existingTask.oldListType
+                            : TaskListTypes.Today,
                     oldListType: TaskListTypes.Completed,
                 },
             });
@@ -134,7 +183,7 @@ export const completeTaskByIdDB = async (id: string, userId: string) => {
                 },
                 data: {
                     isCompleted: true,
-                    isDeleted: false,
+                    isDeleted: existingTask.isDeleted,
                     currentListType: TaskListTypes.Completed,
                     oldListType: existingTask.currentListType,
                 },
@@ -177,6 +226,9 @@ export const updateTaskScheduleDB = async (taskId: string, userId: string, listT
         } else if (listType === TaskListTypes.Deleted) {
             updatedData.isCompleted = false;
             updatedData.isDeleted = true;
+        } else {
+            updatedData.isCompleted = false;
+            updatedData.isDeleted = false;
         }
 
         const updatedTask = await db.task.update({

@@ -9,6 +9,7 @@ export const EmptyTaskTemplate: z.infer<typeof TaskUpdateSchema> = {
     currentListType: TaskListTypes.Today,
     oldListType: TaskListTypes.Today,
     isCompleted: false,
+    isDeleted: false,
 };
 
 export type AuthResponseType = {

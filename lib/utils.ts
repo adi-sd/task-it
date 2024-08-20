@@ -25,6 +25,8 @@ export const getSignatureColor = (type: TaskListTypes) => {
         case "ThisWeek":
             return "skyblue";
         case "Completed":
+            return "emerald";
+        case "Deleted":
             return "stone";
     }
 };
@@ -38,6 +40,8 @@ export const getListBgColor = (type: TaskListTypes) => {
         case "ThisWeek":
             return "bg-sky-200/60";
         case "Completed":
+            return "bg-emerald-200/60";
+        case "Deleted":
             return "bg-stone-200/60";
     }
 };
@@ -51,6 +55,8 @@ export const getListHeaderBgColor = (type: TaskListTypes) => {
         case "ThisWeek":
             return "bg-sky-300";
         case "Completed":
+            return "bg-emerald-300";
+        case "Deleted":
             return "bg-stone-300";
     }
 };
@@ -64,6 +70,8 @@ export const getListTextColor = (type: TaskListTypes) => {
         case "ThisWeek":
             return "text-sky-600";
         case "Completed":
+            return "text-emerald-600";
+        case "Deleted":
             return "text-stone-600";
     }
 };
@@ -84,6 +92,8 @@ export const getTaskBorderColor = (type: TaskListTypes, taskView: TaskViewType) 
             case "ThisWeek":
                 return "border-4 border-sky-900/30";
             case "Completed":
+                return "border-4 border-emerald-900/30";
+            case "Deleted":
                 return "border-4 border-stone-900/30";
         }
     }
@@ -100,6 +110,8 @@ export const getTaskShadowColor = (type: TaskListTypes, taskView: TaskViewType) 
             case "ThisWeek":
                 return "my-inner-shadow-blue";
             case "Completed":
+                return "my-inner-shadow-emerald";
+            case "Deleted":
                 return "my-inner-shadow-stone";
         }
     }

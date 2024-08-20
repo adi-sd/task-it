@@ -25,7 +25,7 @@ interface DialogEditTaskProps {
     isDialog: true;
     setOpen: (value: boolean) => void;
     toggleEdit?: (newViewValue: TaskViewType, currentTaskItemValue: Task) => void;
-    handleDeleteTask?: (taskId: string) => void;
+    handleMarkTaskDeleted?: (taskId: string) => void;
     taskItem: Task;
 }
 
@@ -33,13 +33,19 @@ interface StandaloneEditTaskProps {
     isDialog?: false;
     setOpen?: (value: boolean) => void; // Add setOpen property
     toggleEdit: (newViewValue: TaskViewType, currentTaskItemValue: Task) => void;
-    handleDeleteTask: (taskId: string) => void;
+    handleMarkTaskDeleted: (taskId: string) => void;
     taskItem: Task;
 }
 
 type EditTaskProps = DialogEditTaskProps | StandaloneEditTaskProps;
 
-export const EditTask: React.FC<EditTaskProps> = ({ isDialog, setOpen, toggleEdit, handleDeleteTask, taskItem }) => {
+export const EditTask: React.FC<EditTaskProps> = ({
+    isDialog,
+    setOpen,
+    toggleEdit,
+    handleMarkTaskDeleted,
+    taskItem,
+}) => {
     const user = useCurrentUser();
     const [isPending, startTransition] = useTransition();
     const addTaskStore = useTasksStore((state) => state.addTask);
@@ -51,6 +57,7 @@ export const EditTask: React.FC<EditTaskProps> = ({ isDialog, setOpen, toggleEdi
             headline: taskItem?.headline,
             description: taskItem?.description,
             isCompleted: taskItem?.isCompleted,
+            isDeleted: taskItem?.isDeleted,
             currentListType: taskItem?.currentListType,
             oldListType: taskItem?.oldListType,
         },
@@ -70,12 +77,6 @@ export const EditTask: React.FC<EditTaskProps> = ({ isDialog, setOpen, toggleEdi
                 }
             });
         });
-    };
-
-    const onDeleteClicked = (id: string) => {
-        if (!isDialog) {
-            handleDeleteTask(id);
-        }
     };
 
     return (
@@ -107,7 +108,10 @@ export const EditTask: React.FC<EditTaskProps> = ({ isDialog, setOpen, toggleEdi
                                 </Button>
                                 {!isDialog && (
                                     <Button
-                                        onClick={() => onDeleteClicked(taskItem.id)}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handleMarkTaskDeleted(taskItem.id);
+                                        }}
                                         className="bg-white text-black p-3"
                                     >
                                         <FaTrashAlt size={15}></FaTrashAlt>
