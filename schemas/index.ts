@@ -18,6 +18,13 @@ export const TaskUpdateSchema = z.object({
         TaskListTypes.Completed,
         TaskListTypes.Deleted,
     ]),
+    oldListType: z.enum([
+        TaskListTypes.Today,
+        TaskListTypes.ThisWeek,
+        TaskListTypes.Tomorrow,
+        TaskListTypes.Completed,
+        TaskListTypes.Deleted,
+    ]),
     isCompleted: z.optional(z.boolean()),
 });
 

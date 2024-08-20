@@ -14,15 +14,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { TaskUpdateSchema } from "@/schemas";
 import { Button } from "../ui/button";
 import { TaskListTypes, Task } from "@prisma/client";
-import { addNewTaskDB, updateTaskDB } from "@/data/task";
+import { updateTaskDB } from "@/data/task";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
+import { TaskViewType } from "@/types/types";
+import { useTasksStore } from "@/state/store";
 
 interface DialogEditTaskProps {
     isDialog: true;
     setOpen: (value: boolean) => void;
-    toggleEdit?: (newViewValue: "display" | "edit", currentTaskItemValue: Task) => void;
+    toggleEdit?: (newViewValue: TaskViewType, currentTaskItemValue: Task) => void;
     handleDeleteTask?: (taskId: string) => void;
     taskItem: Task;
 }
@@ -30,7 +32,7 @@ interface DialogEditTaskProps {
 interface StandaloneEditTaskProps {
     isDialog?: false;
     setOpen?: (value: boolean) => void; // Add setOpen property
-    toggleEdit: (newViewValue: "display" | "edit", currentTaskItemValue: Task) => void;
+    toggleEdit: (newViewValue: TaskViewType, currentTaskItemValue: Task) => void;
     handleDeleteTask: (taskId: string) => void;
     taskItem: Task;
 }
@@ -40,6 +42,7 @@ type EditTaskProps = DialogEditTaskProps | StandaloneEditTaskProps;
 export const EditTask: React.FC<EditTaskProps> = ({ isDialog, setOpen, toggleEdit, handleDeleteTask, taskItem }) => {
     const user = useCurrentUser();
     const [isPending, startTransition] = useTransition();
+    const addTaskStore = useTasksStore((state) => state.addTask);
 
     const form = useForm<z.infer<typeof TaskUpdateSchema>>({
         resolver: zodResolver(TaskUpdateSchema),
@@ -49,6 +52,7 @@ export const EditTask: React.FC<EditTaskProps> = ({ isDialog, setOpen, toggleEdi
             description: taskItem?.description,
             isCompleted: taskItem?.isCompleted,
             currentListType: taskItem?.currentListType,
+            oldListType: taskItem?.oldListType,
         },
     });
 
@@ -58,6 +62,7 @@ export const EditTask: React.FC<EditTaskProps> = ({ isDialog, setOpen, toggleEdi
                 if (updatedTask) {
                     if (isDialog) {
                         setOpen(false);
+                        addTaskStore(updatedTask);
                     } else {
                         toggleEdit("display", updatedTask);
                     }

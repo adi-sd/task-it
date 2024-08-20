@@ -7,6 +7,7 @@ export const EmptyTaskTemplate: z.infer<typeof TaskUpdateSchema> = {
     headline: "",
     description: "",
     currentListType: TaskListTypes.Today,
+    oldListType: TaskListTypes.Today,
     isCompleted: false,
 };
 

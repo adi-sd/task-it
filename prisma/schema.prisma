@@ -31,6 +31,7 @@ model Task {
     createdAt           DateTime?         @default(now())
     lastModifiedAt      DateTime?         @default(now())
     currentListType     TaskListTypes
+    oldListType         TaskListTypes
 
     @@unique([id, userId])
 }

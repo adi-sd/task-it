@@ -12,9 +12,12 @@ import { twMerge } from "tailwind-merge";
 import { getTaskShadowColor } from "@/lib/utils";
 import { updateTaskScheduleDB } from "@/data/task";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { TaskViewType } from "@/types/types";
+import { useTasksStore } from "@/state/store";
+import { toast } from "sonner";
 
 interface DisplayTaskProps {
-    toggleEdit: (newViewValue: "display" | "edit", currentTaskValue: Task) => void;
+    toggleEdit: (newViewValue: TaskViewType, currentTaskValue: Task) => void;
     handleDeleteTask: (taskId: string) => void;
     handleCompleteTask: (taskId: string) => void;
     taskItem: Task;
@@ -27,17 +30,23 @@ export interface DisplayTaskRef {
 const DisplayTask = forwardRef<DisplayTaskRef, DisplayTaskProps>(
     ({ toggleEdit, handleDeleteTask, handleCompleteTask, taskItem }, ref) => {
         const user = useCurrentUser();
+        const updateTaskStore = useTasksStore((state) => state.updateTask);
         const [isMinimized, setIsMinimized] = useState(false);
 
         const onEditClicked = () => {
             toggleEdit("edit", taskItem);
         };
 
-        const handleCurrentListTypeUpdate = async (newListType: TaskListTypes) => {
-            const updatedTask = await updateTaskScheduleDB(taskItem.id, user?.id!, newListType);
-            if (updatedTask) {
-                toggleEdit("display", updatedTask);
-            }
+        const handleCurrentListTypeUpdate = (newListType: TaskListTypes) => {
+            updateTaskScheduleDB(taskItem.id, user?.id!, newListType)
+                .then((updatedTask) => {
+                    updateTaskStore(updatedTask);
+                    toggleEdit("display", updatedTask);
+                })
+                .catch((error) => {
+                    console.error("Failed to Update Task Schedule!", error);
+                    toast.error("Failed to Update Task Schedule!");
+                });
         };
 
         useImperativeHandle(ref, () => ({

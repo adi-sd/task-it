@@ -8,9 +8,10 @@ import { twMerge } from "tailwind-merge";
 // Components
 import { DisplayTask, DisplayTaskRef } from "./display-task";
 import { EditTask } from "./edit-task";
-import { TaskListTypes, Task } from "@prisma/client";
+import { Task } from "@prisma/client";
 import { getTaskBgColor, getTaskBorderColor } from "@/lib/utils";
 import { useTasksStore } from "@/state/store";
+import { TaskViewType } from "@/types/types";
 
 interface TaskProps {
     taskId: string;
@@ -26,7 +27,7 @@ export const TaskComponent: React.FC<TaskProps> = ({ taskId, handleDeleteTask, h
 
     const displayTaskRef = useRef<DisplayTaskRef>(null);
 
-    const toggleEdit = (newViewValue: "display" | "edit", currentTaskItemValue: Task) => {
+    const toggleEdit = (newViewValue: TaskViewType, currentTaskItemValue: Task) => {
         setTaskView(newViewValue);
         updateTaskStore(currentTaskItemValue);
     };
@@ -38,13 +39,13 @@ export const TaskComponent: React.FC<TaskProps> = ({ taskId, handleDeleteTask, h
         }
     };
 
-    if (!taskItemValue) return null;
-
     useEffect(() => {
-        if (taskItemValue.headline === "") {
+        if (taskItemValue?.headline === "") {
             setTaskView("edit");
         }
-    }, []);
+    }, [taskItemValue]);
+
+    if (!taskItemValue) return null;
 
     return (
         <div

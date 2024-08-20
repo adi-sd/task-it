@@ -61,8 +61,6 @@ export const addNewTaskDB = async (task: Task, userId: string) => {
     }
 };
 
-
-
 export const updateTaskDB = async (values: z.infer<typeof TaskUpdateSchema>, userId: string) => {
     try {
         const existingTask = await db.task.findUnique({
@@ -123,7 +121,8 @@ export const completeTaskByIdDB = async (id: string, userId: string) => {
                 data: {
                     isCompleted: false,
                     isDeleted: true,
-                    currentListType: TaskListTypes.Today,
+                    currentListType: existingTask.oldListType,
+                    oldListType: TaskListTypes.Completed,
                 },
             });
             return updatedTask;
@@ -137,6 +136,7 @@ export const completeTaskByIdDB = async (id: string, userId: string) => {
                     isCompleted: true,
                     isDeleted: false,
                     currentListType: TaskListTypes.Completed,
+                    oldListType: existingTask.currentListType,
                 },
             });
             return updatedTask;
@@ -161,13 +161,16 @@ export const updateTaskScheduleDB = async (taskId: string, userId: string, listT
 
         let updatedData: {
             currentListType: TaskListTypes;
+            oldListType: TaskListTypes;
             isCompleted: boolean;
             isDeleted: boolean;
         } = {
             currentListType: listType,
+            oldListType: existingTask.currentListType,
             isCompleted: false,
             isDeleted: false,
         };
+
         if (listType === TaskListTypes.Completed) {
             updatedData.isCompleted = true;
             updatedData.isDeleted = false;

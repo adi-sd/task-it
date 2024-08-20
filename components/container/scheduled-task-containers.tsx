@@ -6,10 +6,8 @@ import { Task, TaskListTypes } from "@prisma/client";
 import { CompletedTaskListContainer } from "./completed-task-list-container";
 import { useTasksStore } from "@/state/store";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { getAllTasksDB } from "@/data/task";
-import { set } from "zod";
 
 interface ScheduledTaskContainersProps {
     className?: string;
@@ -31,7 +29,7 @@ export const ScheduledTaskContainers: React.FC<ScheduledTaskContainersProps> = (
         };
         setIsLoading(true);
         fetchTasks().finally(() => setIsLoading(false));
-    }, [setAllTasksStore, user]);
+    }, [setAllTasksStore, user, setIsLoading]);
 
     return (
         <div

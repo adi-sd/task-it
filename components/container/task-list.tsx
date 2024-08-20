@@ -11,6 +11,7 @@ import { twMerge } from "tailwind-merge";
 import { getSignatureColor, getListTextColor } from "@/lib/utils";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useTasksStore } from "@/state/store";
+import { toast } from "sonner";
 
 interface TaskListProps {
     className?: string;
@@ -27,11 +28,11 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
     const user = useCurrentUser();
     const isLoading = useTasksStore((state) => state.isLoading);
     const taskListRef = useRef<HTMLDivElement>(null);
-    const currentTasks = useTasksStore((state) => state.Tasks[listType]);
+    const currentTasks = useTasksStore((state) => state.getTypeSpecificTasks(listType));
     const {
         addTask: addTaskStore,
+        updateTask: updateTaskStore,
         deleteTask: deleteTaskStore,
-        setTypesSpecificTasks: setTypesSpecificTasksStore,
     } = useTasksStore((state) => ({ ...state }));
 
     const handleOnDragStart = (event: React.DragEvent, draggedTask: Task) => {
@@ -44,6 +45,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
         }
     };
 
+    // Drag and Drop Handlers
     const handleDragOver = (event: React.DragEvent) => {
         if (event.dataTransfer && event.dataTransfer.types[0] === "text/plain") {
             event.preventDefault();
@@ -55,7 +57,7 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
 
     const handleOnDrop = (event: React.DragEvent) => {
         const draggedTask = JSON.parse(event.dataTransfer.getData("text/plain")) as Task;
-        console.log("dragged - ", draggedTask);
+        console.log("Dropped Task - ", draggedTask);
         updateTaskScheduleDB(draggedTask.id, user?.id!, listType).then((updatedTask) => {
             addTaskStore(updatedTask);
             if (taskListRef.current) {
@@ -70,25 +72,50 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
         }
     };
 
-    const handleAddNewTask = async () => {
+    const handleDragEnd = () => {
+        if (taskListRef.current) {
+            taskListRef.current.classList.remove("border-dashed", "border-2", "border-gray-500");
+        }
+    };
+
+    // Button Event Handlers
+    const handleAddNewTask = () => {
         let newTask = EmptyTaskTemplate;
         newTask.currentListType = listType;
+        newTask.oldListType = listType;
         newTask.userId = user?.id;
-        const newDbTask = await addNewTaskDB(newTask as Task, user?.id!);
-        addTaskStore(newDbTask);
+        addNewTaskDB(newTask as Task, user?.id!)
+            .then((newDbTask) => {
+                console.log("Task Added - ", newDbTask);
+                addTaskStore(newDbTask);
+            })
+            .catch((error) => {
+                console.error("Failed to Add New Task!", error);
+                toast.error("Failed to Add New Task!");
+            });
     };
 
     const handleDeleteTask = (id: string) => {
-        deleteTaskByIdDB(id, user?.id!).then(() => {
-            console.log("Task Deleted", id);
-            deleteTaskStore(id);
-        });
+        deleteTaskByIdDB(id, user?.id!)
+            .then(() => {
+                console.log("Task Deleted", id);
+                deleteTaskStore(id);
+            })
+            .catch((error) => {
+                console.error("Failed to Delete Task!", error);
+                toast.error("Failed to Delete Task!");
+            });
     };
 
     const handleCompleteTask = (id: string) => {
-        completeTaskByIdDB(id, user?.id!).then((updatedTask) => {
-            deleteTaskStore(updatedTask.id);
-        });
+        completeTaskByIdDB(id, user?.id!)
+            .then((updatedTask) => {
+                updateTaskStore(updatedTask);
+            })
+            .catch((error) => {
+                console.error("Failed to Complete Task!", error);
+                toast.error("Failed to Complete Task!");
+            });
     };
 
     useImperativeHandle(ref, () => ({
@@ -110,13 +137,18 @@ const TaskList = forwardRef<TaskListRef, TaskListProps>(({ className, listType }
                             <Reorder.Group
                                 values={currentTasks}
                                 onReorder={() => {
-                                    setTypesSpecificTasksStore(listType, currentTasks);
+                                    // Implement Priority Reordering
                                 }}
                                 className="w-full h-full flex flex-col gap-y-3"
                             >
                                 {currentTasks.map((task, index, row) => {
                                     return (
-                                        <div key={task.id} draggable onDragStart={(e) => handleOnDragStart(e, task)}>
+                                        <div
+                                            key={task.id}
+                                            draggable
+                                            onDragStart={(e) => handleOnDragStart(e, task)}
+                                            onDragEnd={handleDragEnd}
+                                        >
                                             <Reorder.Item value={task} className="h-fit">
                                                 <TaskComponent
                                                     taskId={task.id}

@@ -5,11 +5,11 @@ import { Dialog, DialogContent, DialogOverlay, DialogTitle, DialogTrigger } from
 import { EditTask } from "./edit-task";
 import { Task, TaskListTypes } from "@prisma/client";
 import { twMerge } from "tailwind-merge";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { EmptyTaskTemplate } from "@/types/types";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { addNewTaskDB } from "@/data/task";
-import { useTasksStore } from "@/state/store";
+import { toast } from "sonner";
 
 interface TaskDialogProps {
     children: React.ReactNode;
@@ -17,18 +17,23 @@ interface TaskDialogProps {
 
 export const TaskDialog: React.FC<TaskDialogProps> = ({ children }) => {
     const user = useCurrentUser();
-    const addTaskStore = useTasksStore((state) => state.addTask);
     const [open, setOpen] = useState(false);
     const [currentTask, setCurrentTask] = useState<Task | null>(null);
 
-    const handleAddNewTask = async () => {
+    const handleAddNewTask = () => {
         let newTask = EmptyTaskTemplate;
         newTask.currentListType = TaskListTypes.Today;
+        newTask.oldListType = TaskListTypes.Today;
         newTask.userId = user?.id;
-        const newDbTask = await addNewTaskDB(newTask as Task, user?.id!);
-        console.log("Task Added - ", newDbTask);
-        addTaskStore(newDbTask);
-        setCurrentTask(newDbTask);
+        addNewTaskDB(newTask as Task, user?.id!)
+            .then((newDbTask) => {
+                console.log("Task Added - ", newDbTask);
+                setCurrentTask(newDbTask);
+            })
+            .catch((error) => {
+                console.error("Failed to Add New Task!", error);
+                toast.error("Failed to Add New Task!");
+            });
     };
 
     return (
