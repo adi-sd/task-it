@@ -34,7 +34,7 @@ export const NavBar: React.FC<NavBarProps> = ({ className, currentUser }) => {
                                     <div className="flex items-center justify-center text-indigo-700 gap-x-2 ">
                                         <Avatar>
                                             <AvatarImage
-                                                className="h-[35px] w-[35px] rounded-full"
+                                                className="h-[35px] w-[35px] rounded-full mr-1"
                                                 src={currentUser.image || ""}
                                             />
                                             <AvatarFallback>
@@ -48,7 +48,7 @@ export const NavBar: React.FC<NavBarProps> = ({ className, currentUser }) => {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="mt-2">
                                     <DropdownMenuLabel className="text-xl font-bold font-mono mx-4">
-                                        Account Details :
+                                        Details:
                                     </DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem className="mx-4 flex gap-x-2 items-center justify-start">
