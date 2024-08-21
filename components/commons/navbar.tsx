@@ -14,7 +14,9 @@ import {
     DropdownMenuSeparator,
     DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import { Toggle } from "@/components/ui/toggle";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
+import { FontBoldIcon } from "@radix-ui/react-icons";
 
 interface NavBarProps {
     className?: string;
@@ -55,6 +57,16 @@ export const NavBar: React.FC<NavBarProps> = ({ className, currentUser }) => {
                                         <LogoutButton>
                                             <span className="text-lg font-mono">{currentUser.email}</span>
                                         </LogoutButton>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuLabel className="text-xl font-bold font-mono mx-4">
+                                        Settings:
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem className="mx-4 flex gap-x-2 items-center justify-start">
+                                        <Toggle aria-label="Toggle italic">
+                                            <FontBoldIcon/>
+                                        </Toggle>
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem className="mx-4 flex gap-x-2 items-center justify-start">

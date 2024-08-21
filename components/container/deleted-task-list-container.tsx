@@ -25,7 +25,7 @@ const DeletedTaskListContainer = forwardRef<DeletedTaskListContainerRef, Deleted
     ({ className }, ref) => {
         const taskListRef = useRef<TaskListRef>(null);
 
-        const [isListVisible, setIsListVisible] = useState(true);
+        const [isListVisible, setIsListVisible] = useState(false);
 
         const handleCollapseList = () => {
             setIsListVisible(!isListVisible);
