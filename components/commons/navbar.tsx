@@ -59,16 +59,6 @@ export const NavBar: React.FC<NavBarProps> = ({ className, currentUser }) => {
                                         </LogoutButton>
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuLabel className="text-xl font-bold font-mono mx-4">
-                                        Settings:
-                                    </DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem className="mx-4 flex gap-x-2 items-center justify-start">
-                                        <Toggle aria-label="Toggle italic">
-                                            <FontBoldIcon/>
-                                        </Toggle>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
                                     <DropdownMenuItem className="mx-4 flex gap-x-2 items-center justify-start">
                                         <IoMdExit size={25}></IoMdExit>
                                         <LogoutButton>
