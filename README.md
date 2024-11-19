@@ -1,3 +1,58 @@
+# Task It - Task Planning Platform
+
+Task It is a minimal, snappy task planning platform designed for efficient task management. The app provides a clean interface with features like one-click editing, drag-to-plan functionality, and multiple task listings for today, tomorrow, this week, and the "plan" list.
+
+## Features
+- **Drag and Drop**: Easily drag tasks to different time slots to plan your day.
+- **Recycle Tasks**: Reuse tasks by recycling them for future planning.
+- **Sign in with Google**: Securely sign in with your Google account for a personalized experience.
+
+## Tech Stack
+- **Frontend**: React.js
+- **Authentication**: Firebase Authentication (for Google sign-in)
+- **Drag and Drop**: React DnD (for task planning)
+
+## Installation
+
+To run this project locally, follow these steps:
+
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/adi-sd/task-it.git
+    ```
+
+2. Navigate to the project directory:
+    ```bash
+    cd task-it
+    ```
+
+3. Install the necessary dependencies:
+    ```bash
+    npm install
+    ```
+
+4. Start the development server:
+    ```bash
+    npm start
+    ```
+
+5. Open your browser and visit `http://localhost:3000` to view the app.
+
+## Screenshots
+
+![Screenshot 1](path/to/screenshot1.png)
+![Screenshot 2](path/to/screenshot2.png)
+
+## Contributing
+
+Feel free to fork the repository and submit a pull request with improvements or new features.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
