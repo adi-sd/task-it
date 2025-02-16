@@ -1,6 +1,6 @@
 "use client";
 
-import { Dialog, DialogContent, DialogOverlay, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogOverlay, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import LoginForm from "@/components/auth/login-form";
 import RegisterForm from "@/components/auth/register-form";
 import { useState } from "react";
@@ -20,7 +20,8 @@ export const AuthDialog: React.FC<AuthDialogProps> = ({ children }) => {
         <Dialog>
             <DialogOverlay className="bg-white/0 backdrop-blur-sm"></DialogOverlay>
             <DialogTrigger asChild>{children}</DialogTrigger>
-            <DialogContent className="p-0 w-auto bg-transparent border-none">
+            <DialogContent className="p-0 w-auto bg-transparent border-none" aria-describedby={undefined}>
+                <DialogTitle hidden></DialogTitle>
                 {isLogin ? (
                     <LoginForm handleSwitchToRegister={switchLoginOrRegister}></LoginForm>
                 ) : (
