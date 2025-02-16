@@ -102,7 +102,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ handleSwitchToLogin }) => {
                                         <Input
                                             {...field}
                                             placeholder="******"
-                                            type="new-password"
+                                            type="password"
                                             disabled={isPending}
                                         ></Input>
                                     </FormControl>

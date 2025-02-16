@@ -42,7 +42,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({ children }) => {
             <DialogTrigger asChild onClick={handleAddNewTask}>
                 {children}
             </DialogTrigger>
-            <DialogContent className="p-0 w-auto bg-transparent border-none" aria-describedby={undefined}>
+            <DialogContent className="p-0 w-auto bg-transparent border-none">
                 <DialogTitle>Create a New Task</DialogTitle>
                 <div className={twMerge("flex flex-col gap-y-4 h-[600px] w-[500px] bg-white/90 p-6 rounded-lg")}>
                     <div className="px-4 py-2">
